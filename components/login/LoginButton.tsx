@@ -1,8 +1,8 @@
-import React, { MouseEventHandler } from 'react'
 import GoogleLogin, {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login'
+import {AiOutlineGoogle} from 'react-icons/ai'
 
 import { client } from '../../sanity-scripts/client'
 import { useRouter } from 'next/router'
@@ -46,7 +46,7 @@ export const LoginButton = () => {
     <GoogleLogin
       clientId={process.env.NEXT_PUBLIC_GOOGLE_API_TOKEN!}
       render={({ onClick, disabled }) => (
-        <StyledButton {...{ onClick, disabled }}> Sign in with Google </StyledButton>
+        <StyledButton {...{ onClick, disabled }} ><AiOutlineGoogle className='h-5 w-5 inline-block mr-2'/> Sign in with Google </StyledButton>
       )}
       onSuccess={responseGoogle}
       onFailure={responseGoogle}
