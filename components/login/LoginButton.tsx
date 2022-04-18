@@ -7,7 +7,7 @@ import GoogleLogin, {
 import { client } from '../../sanity-scripts/client'
 import { useRouter } from 'next/router'
 
-import {StyledButton} from '../StyledButton'
+import StyledButton from '../StyledButton'
 
 export const LoginButton = () => {
 
