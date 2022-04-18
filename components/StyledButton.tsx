@@ -8,7 +8,7 @@ type Props = {
 
 const StyledButton = ({ onClick, disabled, children }: Props) => {
   return (
-    <button className="btn-primary rounded-full" {...{ onClick, disabled }}>
+    <button className="btn-primary rounded-full flex items-center" {...{ onClick, disabled }}>
       {children}
     </button>
   )
