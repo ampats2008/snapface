@@ -4,12 +4,15 @@ import Link from 'next/link'
 import { NavLink } from './NavLink'
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
+import { BiRightArrowAlt } from 'react-icons/bi'
 
 type LayoutProps = {
   children: React.ReactNode
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const router = useRouter()
+
   return (
     <>
       <Head>
@@ -38,13 +41,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </a>
           </Link>
         </div>
-        <nav className="my-10 flex w-full max-w-screen-md flex-wrap justify-evenly">
+        <nav className="my-auto flex w-full max-w-screen-md flex-wrap justify-evenly">
           <NavLink name="Home" link="/" />
           <NavLink name="Discover" link="/discover" />
-          <NavLink name="Login" link="/login" />
+          {/* Sign in button */}
+          {router.pathname !== '/login' && (
+            <Link href={'/login'}>
+              <a className="btn-primary flex items-center rounded-full">
+                Sign in{' '}
+                <BiRightArrowAlt className="ml-1 inline-block h-5 w-5" />
+              </a>
+            </Link>
+          )}
         </nav>
       </header>
-      <div id="mainContainer" className={'min-h-[100vh]'}>
+      <div id="mainContainer" className={'min-h-screen'}>
         {children}
       </div>
       <footer className={'mt-10 bg-brand-600 p-10 text-center text-white'}>
