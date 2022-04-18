@@ -39,7 +39,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div id="logoCont">
           <Link href="/">
             <a className="my-10 flex items-center justify-center px-10 transition-opacity hover:opacity-60">
-              <h1 className="text-3xl font-bold sm:text-5xl">Snapface 🤳</h1>
+              <h1 className="text-3xl font-bold sm:text-5xl">Snapface 🖐</h1>
             </a>
           </Link>
         </div>
