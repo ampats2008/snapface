@@ -5,7 +5,7 @@ const LandingContent = () => {
   return (
     <>
       <h1 className="text-6xl font-bold">
-        Welcome to <span className="text-brand-600"> Snapface.</span>
+        Welcome to <span className="bg-clip-text text-transparent brand-gradient"> Snapface.</span>
       </h1>
       <p className="mt-5 text-2xl">The anti-social, social media platform.</p>
       <Link href={'/login'}>
