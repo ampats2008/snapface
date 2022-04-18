@@ -5,6 +5,7 @@ import { NavLink } from './NavLink'
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { BiRightArrowAlt } from 'react-icons/bi'
+import { useUser } from '../../hooks/useUser'
 
 type LayoutProps = {
   children: React.ReactNode
@@ -12,6 +13,7 @@ type LayoutProps = {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter()
+  const [user] = useUser()
 
   return (
     <>
@@ -45,7 +47,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <NavLink name="Home" link="/" />
           <NavLink name="Discover" link="/discover" />
           {/* Sign in button */}
-          {router.pathname !== '/login' && (
+          {router.pathname !== '/login' && (!user) && (
             <Link href={'/login'}>
               <a className="btn-primary flex items-center rounded-full">
                 Sign in{' '}

@@ -4,8 +4,13 @@ import { LandingContent, UserLanding} from '../components'
 import { useUser } from '../hooks/useUser'
 
 const Home: NextPage = () => {
-  // useUser
-  const [user] = useUser()
+  
+  const [user] = useUser() // get the current user
+
+  useEffect(() => {
+    // scroll to top on mount
+    window.scrollTo(0,0)
+  }, [])
 
   return (
     <main className="grid min-h-[60vh] place-content-center">
