@@ -15,7 +15,7 @@ type LayoutProps = {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter()
-  const { isLoggedIn } = useUser()
+  const { user, isLoggedIn } = useUser()
 
   const handleLogOut = () => {
     localStorage.clear()
@@ -58,7 +58,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <nav className="my-auto flex w-full max-w-screen-md flex-wrap justify-evenly">
           <NavLink name="Home" link="/" />
           <NavLink name="Discover" link="/discover" />
-          {/* Sign in button */}
+          {/* Don't show Sign-in button if user isLoggedIn or if user is on login page  */}
           {router.pathname !== '/login' && !isLoggedIn && (
             <Link href={'/login'}>
               <a className="btn-primary flex items-center rounded-full">
@@ -66,6 +66,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <BiRightArrowAlt className="ml-1 inline-block h-5 w-5" />
               </a>
             </Link>
+          )}
+          
+          {isLoggedIn && (
+            <NavLink name="My Profile" link={`/user/${user?._id}`} />
           )}
 
           {isLoggedIn && (

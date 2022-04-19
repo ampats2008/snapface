@@ -1,18 +1,34 @@
-import { FC } from "react"
+import Error from 'next/error'
+import Image from 'next/image'
+import { FC } from 'react'
+import { usePosts } from '../hooks/usePosts'
+import { Loading, Post } from './index'
 
 type Props = {
-    filterBy?: string
+  filterBy?: string
 }
 
-const Feed : FC<Props> = ({filterBy  = 'all'}) => {
+const Feed: FC<Props> = ({ filterBy = 'all' }) => {
+  // fetch posts to display (with a filter if provided)
+  // filters could be:
+  //     a category, liked posts by a given user, or created posts by a given user
+  const { posts, isLoading, isError } = usePosts(filterBy)
 
-    // fetch posts to display (with a filter if provided)
-    // filters could be: 
-    //     a category, liked posts by a given user, or created posts by a given user
-    // const {posts, isLoading, isError} = usePosts(filterBy)
+  if (isLoading) return <Loading />
+
+  if (isError) return <Error statusCode={404} /> // replace this with my own error component
+
+  console.log(posts)
 
   return (
-    <div>{filterBy}</div>
+    <div id="postsContainer" className="">
+      {posts.map((post) => (
+        <Post
+          key={`${post.postedBy._ref}_${post.title}_${post._id}`}
+          {...{ post }}
+        />
+      ))}
+    </div>
   )
 }
 

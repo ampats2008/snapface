@@ -31,7 +31,6 @@ const Discover: NextPage<Props> = ({ categories }) => {
 
         {/* feed takes category as prop */}
         <section className="mb-10">
-          <h2 className="ml-10 mb-4 font-bold">Feed:</h2>
           <Feed filterBy={currCategory}/>
         </section>
       </div>
