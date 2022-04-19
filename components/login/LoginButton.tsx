@@ -2,7 +2,7 @@ import GoogleLogin, {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from 'react-google-login'
-import {AiOutlineGoogle} from 'react-icons/ai'
+import { AiOutlineGoogle } from 'react-icons/ai'
 
 import { client } from '../../sanity-scripts/client'
 import { useRouter } from 'next/router'
@@ -10,7 +10,6 @@ import { useRouter } from 'next/router'
 import StyledButton from '../StyledButton'
 
 export const LoginButton = () => {
-
   const router = useRouter()
 
   const responseGoogle = (response: GoogleLoginResponse) => {
@@ -18,10 +17,11 @@ export const LoginButton = () => {
     if (response.hasOwnProperty('profileObj')) {
       localStorage.setItem('user', JSON.stringify(response.profileObj))
 
+      // Get props of API response object to create a user for Sanity
       const { givenName, familyName, email, googleId, imageUrl } =
         response.profileObj
 
-      // if response is successful, create document object for User and pass to Sanity
+      // Create document object for User and pass to Sanity
       const doc = {
         _id: googleId,
         _type: 'user',
@@ -31,13 +31,19 @@ export const LoginButton = () => {
         profileImg: imageUrl,
       }
 
-      client.createIfNotExists(doc).then(() => {
-        console.log('user created if it didnt exist already')
-        router.push('/')
-      })
+      // Push document to Sanity, redirect user to welcome page if successful
+      client.createIfNotExists(doc)
+        .then(() => {
+          router.push('/user/welcome')
+        })
+        .catch(() =>
+          alert(
+            `Sorry, our servers could not process your request at this time. Please try again later.`
+          )
+        )
     } else {
       alert(
-        `Sorry, your request could not be processed at this time. ${response.code}`
+        `Sorry, your request could not be processed by Google at this time. Please try again.`
       )
     }
   }
@@ -46,7 +52,10 @@ export const LoginButton = () => {
     <GoogleLogin
       clientId={process.env.NEXT_PUBLIC_GOOGLE_API_TOKEN!}
       render={({ onClick, disabled }) => (
-        <StyledButton {...{ onClick, disabled }} ><AiOutlineGoogle className='h-5 w-5 inline-block mr-2'/> Sign in with Google </StyledButton>
+        <StyledButton {...{ onClick, disabled }}>
+          <AiOutlineGoogle className="mr-2 inline-block h-5 w-5" /> Sign in with
+          Google{' '}
+        </StyledButton>
       )}
       onSuccess={responseGoogle}
       onFailure={responseGoogle}
