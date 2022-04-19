@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 
 // Depends on User to be signed in:
 const UserProfile: NextPage = () => {
-  const [user] = useUser()
+  const {user, isLoading} = useUser()
 
   useEffect(() => {
     console.log(user)
@@ -14,11 +14,11 @@ const UserProfile: NextPage = () => {
   // Call for posts based on filter value
   const [filter, setFilter] = useState('myPosts')
 
-  if (!user) return <Loading />
+  if (isLoading) return <Loading />
 
   return (
     <main>
-      <ProfileBanner {...{ user }} />
+      <ProfileBanner user={user!} />
       {/* Posts feed with controls for filtering by *liked* and *postedBy* current user */}
       <ProfilePostsFilter {...{setFilter, filter}} />
     </main>
