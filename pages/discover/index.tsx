@@ -1,15 +1,14 @@
 import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { Category, Feed } from '../../components'
+import { client } from '../../sanity-scripts/client'
 
-const Discover: NextPage = () => {
-  const [category, setCategory] = useState<string | null>(null)
+type Props = {
+  categories: string[]
+}
 
-  useEffect(() => {
-    console.log(category)
-  }, [category])
+const Discover: NextPage<Props> = ({ categories }) => {
+  const [currCategory, setCurrCategory] = useState<string>()
 
   return (
     <main className="py-10 px-4 xl:p-10">
@@ -19,36 +18,21 @@ const Discover: NextPage = () => {
       <div id="dashboard" className="grid-cols-[200px,_1fr] sm:grid">
         <aside className="mb-10">
           <h2 className="mb-4 font-bold">Categories:</h2>
-          <Category
-            title={'technology'}
-            onClick={() => setCategory('technology')}
-            isActive={category === 'technology' ? true : false}
-          />
-          <Category
-            title={'nature'}
-            onClick={() => setCategory('nature')}
-            isActive={category === 'nature' ? true : false}
-          />
-          <Category
-            title={'sports'}
-            onClick={() => setCategory('sports')}
-            isActive={category === 'sports' ? true : false}
-          />
-          <Category
-            title={'gaming'}
-            onClick={() => setCategory('gaming')}
-            isActive={category === 'gaming' ? true : false}
-          />
-          <Category
-            title={'art'}
-            onClick={() => setCategory('art')}
-            isActive={category === 'art' ? true : false}
-          />
+          {/* will become a map after categories query is made */}
+          {categories.sort().map((catName) => (
+            <Category
+              key={catName}
+              title={catName}
+              onClick={() => setCurrCategory(catName)}
+              isActive={currCategory === catName ? true : false}
+            />
+          ))}
         </aside>
 
         {/* feed takes category as prop */}
         <section className="mb-10">
           <h2 className="ml-10 mb-4 font-bold">Feed:</h2>
+          <Feed filterBy={currCategory}/>
         </section>
       </div>
     </main>
@@ -57,38 +41,15 @@ const Discover: NextPage = () => {
 
 export default Discover
 
-// Category component
-const Category = ({
-  isActive,
-  onClick,
-  title,
-}: {
-  isActive: boolean
-  onClick: React.MouseEventHandler
-  title: string
-}) => {
-  const bottomBColor = isActive
-    ? 'border-brand-600'
-    : 'border-gray-300 hover:border-brand-300'
+export async function getStaticProps() {
+  // get all possible post categories for tabs at build time
+  const data = await client.fetch(`*[_type == 'category']{name}`)
 
-  return (
-    <div
-      id="categoryBtn"
-      onClick={onClick}
-      className={`block cursor-pointer border-b-2 p-4 transition-all xl:border-b-0 xl:border-r-2 ${bottomBColor}`}
-    >
-      <div
-        id="categoryInfoGroup"
-        className="mx-auto flex w-max items-center sm:mx-0"
-      >
-        <Image
-          className="rounded-full"
-          width={'50px'}
-          height={'50px'}
-          src={`https://source.unsplash.com/100x100/?${title}`}
-        />
-        <p className="ml-3 capitalize">{title}</p>
-      </div>
-    </div>
-  )
+  const categories = data.map((obj: { name: any }) => obj.name)
+
+  return {
+    props: {
+      categories,
+    },
+  }
 }
