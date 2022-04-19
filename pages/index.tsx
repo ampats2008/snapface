@@ -1,23 +1,29 @@
 import type { NextPage } from 'next'
+import Router, { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { LandingContent, UserLanding} from '../components'
+import { Loading, LoggedOutLanding } from '../components'
 import { useUser } from '../hooks/useUser'
 
 const Home: NextPage = () => {
-  
-  const [user] = useUser() // get the current user
+
+  const { isLoading , isLoggedIn } = useUser() // get the current user
+
+  const router = useRouter()
 
   useEffect(() => {
     // scroll to top on mount
     window.scrollTo(0,0)
+    // localStorage.clear()
   }, [])
 
+  if (isLoading) return <Loading />
+
+  if (isLoggedIn) router.push('/user/welcome')
+
   return (
-    <main className="grid min-h-[60vh] place-content-center">
+    <main className="grid place-content-center min-h-[50vh]">
       {/* display only if not logged in: */}
-      {!(user) ?
-      <LandingContent /> :
-      <UserLanding {...{user}} />}
+      <LoggedOutLanding />
     </main>
   )
 }
