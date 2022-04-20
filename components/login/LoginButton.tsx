@@ -50,7 +50,7 @@ export const LoginButton = () => {
 
   return (
     <GoogleLogin
-      clientId={process.env.NEXT_PUBLIC_GOOGLE_API_TOKEN!}
+      clientId={process.env.GOOGLE_ID!}
       render={({ onClick, disabled }) => (
         <StyledButton {...{ onClick, disabled }}>
           <AiOutlineGoogle className="mr-2 inline-block h-5 w-5" /> Sign in with

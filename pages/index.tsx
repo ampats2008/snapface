@@ -1,4 +1,5 @@
 import type { NextPage } from 'next'
+import { useSession } from 'next-auth/react'
 import Router, { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Loading, LoggedOutLanding } from '../components'
@@ -6,7 +7,8 @@ import { useUser } from '../hooks/useUser'
 
 const Home: NextPage = () => {
 
-  const { isLoading , isLoggedIn } = useUser() // get the current user
+  // const { user, isLoading, isLoggedIn } = useUser() // get the current user
+  const {data: session, status} = useSession()
 
   const router = useRouter()
 
@@ -16,9 +18,14 @@ const Home: NextPage = () => {
     // localStorage.clear()
   }, [])
 
-  if (isLoading) return <Loading />
+  useEffect(()=> {
+    console.log(session);
+  }, [session])
 
-  if (isLoggedIn) router.push('/user/welcome')
+  useEffect(() => {
+    console.log('login status:', status);
+    if (status === 'authenticated') router.push('/user/welcome')
+  }, [status])
 
   return (
     <main className="grid place-content-center min-h-[50vh]">

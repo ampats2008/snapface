@@ -8,6 +8,7 @@ import { BiRightArrowAlt } from 'react-icons/bi'
 import { useUser } from '../../hooks/useUser'
 import { IoExitOutline } from 'react-icons/io5'
 import StyledButton from '../StyledButton'
+import { useSession, signIn, signOut } from "next-auth/react"
 
 type LayoutProps = {
   children: React.ReactNode
@@ -15,12 +16,7 @@ type LayoutProps = {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter()
-  const { user, isLoggedIn } = useUser()
-
-  const handleLogOut = () => {
-    localStorage.clear()
-    router.push('/')
-  }
+  const {data: session} = useSession()
 
   return (
     <>
@@ -59,7 +55,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <NavLink name="Home" link="/" />
           <NavLink name="Discover" link="/discover" />
           {/* Don't show Sign-in button if user isLoggedIn or if user is on login page  */}
-          {router.pathname !== '/login' && !isLoggedIn && (
+          {router.pathname !== '/login' && !session && (
             <Link href={'/login'}>
               <a className="btn-primary flex items-center rounded-full">
                 Sign in{' '}
@@ -68,12 +64,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Link>
           )}
           
-          {isLoggedIn && (
-            <NavLink name="My Profile" link={`/user/${user?._id}`} />
+          {session && (
+            <NavLink name="My Profile" link={`/`} />  // href: user/${user?._id}
           )}
 
-          {isLoggedIn && (
-            <StyledButton onClick={handleLogOut} disabled={false}>
+          {session && (
+            <StyledButton onClick={() => signOut({ callbackUrl: '/' })} disabled={false}>
               Log out <IoExitOutline className="ml-2 inline-block h-5 w-5" />
             </StyledButton>
           )}
