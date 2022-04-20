@@ -9,7 +9,7 @@ export const NavLink: React.FC<NavLinkProps> = ({ name, link }) => {
   return (
     <>
       <Link href={link}>
-        <a className="my-auto hover:text-brand-400 hover:dark:text-brand-300 transition-colors">
+        <a className="my-auto hover:text-brand-400 transition-colors">
           {name}
         </a>
       </Link>
