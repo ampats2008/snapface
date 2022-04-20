@@ -12,7 +12,7 @@ const Discover: NextPage<Props> = ({ categories }) => {
 
   return (
     <main className="py-10 px-4 xl:p-10">
-      <h1 className="mb-10 text-4xl font-bold">
+      <h1 className="mb-10 text-3xl font-bold">
         Find something cool to share...
       </h1>
       <div id="dashboard" className="grid-cols-[200px,_1fr] sm:grid">
