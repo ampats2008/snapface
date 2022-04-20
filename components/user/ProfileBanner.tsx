@@ -30,10 +30,10 @@ const ProfileBanner = ({ user }: Props) => {
           <h1 className=" text-4xl font-bold">
             {user.firstName} {user.lastName}
           </h1>
-          <p className="mt-1 text-sm text-gray-300">@{user.userName}</p>
+          {(user.userName) && <p className="mt-1 text-sm text-gray-300">@{user.userName}</p>}
         </div>
       </div>
-      <h3 className="mt-5 max-w-[50ch] leading-[1.7]">{user.bio}</h3>
+      <h3 className="mt-5 max-w-[50ch] leading-[1.7]">{(user.bio) ? user.bio : "You haven't created a bio yet. Edit your profile to add one."}</h3>
     </section>
   )
 }
