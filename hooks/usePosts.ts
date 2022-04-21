@@ -9,12 +9,21 @@ export const usePosts: (filterBy: string) => {
   isError: boolean
 } = (filterBy) => {
   //onMount: fetch 100 posts with react-query
-  const query = `*[_type == 'post'][0...100]`
+
+  // Make query string to fetch posts:
+  // if filterBy has been set (i.e. a category tab has been clicked),
+  // include the filter in the query, else leave it blank
+  const query = `*[_type == 'post' ${
+    filterBy !== ''
+      ? `&& references(*[_type=="category" && name == '${filterBy}']._id)`
+      : ''
+  }][0...100] | order(_createdAt desc)`
+
   const {
     data: posts,
     isLoading,
     isError,
-  } = useQuery('discover-posts', () => client.fetch(query))
+  } = useQuery(['discover-posts', filterBy], () => client.fetch(query))
 
   return { posts, isLoading, isError }
 }

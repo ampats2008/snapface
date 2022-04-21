@@ -8,7 +8,7 @@ type Props = {
 }
 
 const Discover: NextPage<Props> = ({ categories }) => {
-  const [currCategory, setCurrCategory] = useState<string>()
+  const [currCategory, setCurrCategory] = useState<string>('')
 
   return (
     <main className="py-10 px-4 xl:p-10">
@@ -42,9 +42,9 @@ export default Discover
 
 export async function getStaticProps() {
   // get all possible post categories for tabs at build time
-  const data = await client.fetch(`*[_type == 'category']{name}`)
+  const data : [{name:string}] = await client.fetch(`*[_type == 'category']{name}`)
 
-  const categories = data.map((obj: { name: any }) => obj.name)
+  const categories = data.map((obj: { name: string }) => obj.name)
 
   return {
     props: {
