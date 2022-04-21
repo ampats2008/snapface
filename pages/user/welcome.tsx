@@ -23,7 +23,7 @@ const UserMenu: NextPage = () => {
   
   if (status === 'loading' || isLoading) return <Loading />
 
-  if (isError) return <Error statusCode={error} />
+  if (isError) return <Error statusCode={401} />
 
   return (
     <main className="grid grid-rows-[25vh_1fr] place-items-center">

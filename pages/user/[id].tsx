@@ -1,7 +1,7 @@
 import Error from 'next/error'
 import type { NextPage } from 'next'
-import { useUser } from '../../../hooks/useUser'
-import { Loading, ProfileBanner, ProfilePostsFilter } from '../../../components'
+import { useUser } from '../../hooks/useUser'
+import { Loading, ProfileBanner, ProfilePostsFilter } from '../../components'
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 
@@ -20,7 +20,7 @@ const UserProfile: NextPage = () => {
 
   if (status === 'loading' || isLoading) return <Loading />
 
-  if (isError) return <Error statusCode={error} />
+  if (isError) return <Error statusCode={401} />
 
   return (
     <main>

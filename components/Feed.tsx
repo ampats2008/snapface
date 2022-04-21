@@ -16,7 +16,7 @@ const Feed: FC<Props> = ({ filterBy = 'all' }) => {
 
   if (isLoading) return <Loading />
 
-  if (isError) return <Error statusCode={404} /> // replace this with my own error component
+  if (isError) return <Error statusCode={401} /> // replace this with my own error component
 
   console.log(posts)
 

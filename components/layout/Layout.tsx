@@ -65,7 +65,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           )}
           
           {session && (
-            <NavLink name="My Profile" link={`/`} />  // href: user/${user?._id}
+            <NavLink name="My Profile" link={`/user/${session.user.id}`} />
           )}
 
           {session && (
