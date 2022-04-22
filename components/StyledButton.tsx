@@ -1,14 +1,25 @@
 import React, { ReactNode } from 'react'
 
 type Props = {
-    onClick: React.MouseEventHandler,
-    disabled: boolean | undefined,
-    children: ReactNode,
+  onClick: React.MouseEventHandler
+  disabled: boolean | undefined
+  roundingClass?: string
+  btnType?: string
+  children: ReactNode
 }
 
-const StyledButton = ({ onClick, disabled, children }: Props) => {
+const StyledButton = ({
+  onClick,
+  disabled,
+  btnType = 'btn-primary',
+  roundingClass = 'rounded-full',
+  children,
+}: Props) => {
   return (
-    <button className="btn-primary rounded-full flex items-center" {...{ onClick, disabled }}>
+    <button
+      className={`${btnType} flex items-center ${roundingClass}`}
+      {...{ onClick, disabled }}
+    >
       {children}
     </button>
   )

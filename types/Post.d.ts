@@ -41,6 +41,13 @@ export interface Comment {
   comment: string
   postedBy: PostedBy
   timeStamp: Date
+  replies: Reply[]
+  _key: string
+  _type: string
+}
+
+export interface Reply {
+  comment: Comment
   _key: string
   _type: string
 }
