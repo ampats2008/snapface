@@ -1,7 +1,12 @@
 import Error from 'next/error'
 import type { NextPage, NextPageContext } from 'next'
 import { useUser } from '../../hooks/useUser'
-import { Loading, ProfileBanner, ProfilePostsFilter } from '../../components'
+import {
+  Feed,
+  Loading,
+  ProfileBanner,
+  ProfilePostsFilter,
+} from '../../components'
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { client } from '../../sanity-scripts/client'
@@ -9,9 +14,16 @@ import { User } from '../../types/User'
 
 // Private version of profile page: requires user to be signed in:
 // the public user profile page will be a SSR page that doesn't interface with useUser / useSession
-const UserProfile: NextPage<{initialData: User}> = ({initialData:pageUser}) => {
-  const {data: session, status} = useSession()
-  const { user:currentUser, isLoading, isError, error } = useUser(session, status) // get the current user using the session.user.id
+const UserProfile: NextPage<{ initialData: User }> = ({
+  initialData: pageUser,
+}) => {
+  const { data: session, status } = useSession()
+  const {
+    user: currentUser,
+    isLoading,
+    isError,
+    error,
+  } = useUser(session, status) // get the current user using the session.user.id
 
   // useEffect(() => {
   //   console.log(session)
@@ -30,15 +42,17 @@ const UserProfile: NextPage<{initialData: User}> = ({initialData:pageUser}) => {
 
   return (
     <main>
-      {(pageUser) && <ProfileBanner {...{user: pageUser}} />}
+      {pageUser && <ProfileBanner {...{ user: pageUser }} />}
       {/* Posts feed with controls for filtering by *liked* and *postedBy* current user */}
-      <ProfilePostsFilter {...{setFilter, filter}} />
+      <ProfilePostsFilter {...{ setFilter, filter }} />
+      <section className="mb-10">
+        <Feed filterBy={filter} userId={session?.user?.id} />
+      </section>
     </main>
   )
 }
 
 export default UserProfile
-
 
 export async function getServerSideProps(context: NextPageContext) {
   const query = `*[_type == 'user' && _id == '${context.query.id}'][0]`

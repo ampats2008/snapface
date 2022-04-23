@@ -19,8 +19,8 @@ const ProfilePostsFilter = ({ setFilter, filter }: Props) => {
       </Tab>
 
       <Tab
-        onClick={() => setFilter('liked')}
-        isActive={filter === 'liked' ? true : false}
+        onClick={() => setFilter('myLikedPosts')}
+        isActive={filter === 'myLikedPosts' ? true : false}
       >
         Liked
       </Tab>

@@ -24,7 +24,7 @@ const ProfileBanner = ({ user }: Props) => {
           width="70px"
           height="70px"
           className="inline-block rounded-full border-4 border-white shadow-sm"
-          src={user.profileImg}
+          src={(user.profileImg) ? user.profileImg : 'https://source.unsplash.com/70x70/?nature,photography,technology'}
         />
         <div className="ml-4">
           <h1 className=" text-4xl font-bold">

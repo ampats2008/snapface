@@ -51,8 +51,6 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
           {post.title}
         </h1>
 
-        <OriginalPoster postedByUserId={post.postedBy._ref} />
-
         <div className="relative my-5 h-[50vh] max-w-screen-md">
           <Image
             className="rounded-2xl"
@@ -87,6 +85,8 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
             </p>
           </div>
         </div>
+        
+        <OriginalPoster postedByUserId={post.postedBy._ref} />
 
         <span className="text-sm text-gray-400">Description:</span>
         <hr className="h-[1px] border-gray-300" />
@@ -108,7 +108,7 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
 
       <div id="col2">
         {/* Comment Section */}
-        <h1 className="my-4 max-w-screen-sm text-xl  font-semibold">
+        <h1 className="my-4 text-xl  font-semibold">
           Comments ({post.comments?.length ? post.comments?.length : '0'}):
         </h1>
         {status === 'authenticated' && (
@@ -133,26 +133,37 @@ const OriginalPoster = ({
   const { user, isLoading, isError } = useAnyUserById(postedByUserId)
 
   // Calculate what the displayName of this user should be: either userName or their full name
-  const displayName = useDisplayName({user, userLoading:isLoading, userError:isError})
+  const displayName = useDisplayName({
+    user,
+    userLoading: isLoading,
+    userError: isError,
+  })
 
   if (isLoading) return <Loading />
 
   if (isError || typeof user === 'undefined') return <Error statusCode={401} />
 
   return (
-    <div id="userNameGroup" className="flex items-center">
-      <Image
-        width="40px"
-        height="40px"
-        className="inline-block rounded-full border-4 border-white shadow-sm"
-        src={
-          user.profileImg
-            ? user.profileImg
-            : 'https://source.unsplash.com/70x70/?nature,photography,technology'
-        }
-      />
-      <Link href={`/user/${user._id}`}><a className='ml-3 text-xl text-gray-600 hover:text-gray-400'>{displayName}</a></Link>
-    </div>
+    <Link href={`/user/${user._id}`}>
+      <a>
+        <div
+          id="userNameGroup"
+          className="flex w-max cursor-pointer items-center rounded-full bg-gray-300 my-5 pr-4 py-0 hover:opacity-80"
+        >
+          <Image
+            width="40px"
+            height="40px"
+            className="inline-block rounded-full border-4 border-white shadow-sm"
+            src={
+              user.profileImg
+                ? user.profileImg
+                : 'https://source.unsplash.com/70x70/?nature,photography,technology'
+            }
+          />
+          <p className="ml-3 text-xl text-gray-600">{displayName}</p>
+        </div>
+      </a>
+    </Link>
   )
 }
 
@@ -208,7 +219,7 @@ const NewCommentForm = ({
   }
 
   return (
-    <div className="flex max-w-screen-sm items-center gap-4">
+    <div className="flex items-center gap-4">
       <textarea
         placeholder="Post a comment..."
         className="h-[150px] flex-1 resize-none rounded-xl bg-gray-300 p-2"

@@ -12,7 +12,7 @@ const CommentSection = ({ comments }: Props) => {
   const [commentsShown, setCommentsShown] = useState(initialCommentsShown)
 
   return (
-    <aside id="commentSection" className="max-w-screen-sm">
+    <aside id="commentSection">
       {comments
         .sort((a, b) => {
           // sort comments by most recent to least recent

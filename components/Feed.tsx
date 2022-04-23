@@ -1,24 +1,23 @@
 import Error from 'next/error'
 import Image from 'next/image'
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { usePosts } from '../hooks/usePosts'
 import { Loading, Post } from './index'
 
 type Props = {
-  filterBy?: string
+  filterBy?: string,
+  userId?: string
 }
 
-const Feed: FC<Props> = ({ filterBy = 'all' }) => {
+const Feed: FC<Props> = ({ filterBy = 'all', userId }) => {
   // fetch posts to display (with a filter if provided)
   // filters could be:
   //     a category, liked posts by a given user, or created posts by a given user
-  const { posts, isLoading, isError } = usePosts(filterBy)
+  const { posts, isLoading, isError } = usePosts(filterBy, userId)
 
   if (isLoading) return <Loading />
 
-  if (isError) return <Error statusCode={401} /> // replace this with my own error component
-
-  // console.log(posts)
+  if (isError) return <Error statusCode={401} /> // replace this with my own error component 
 
   return (
     <div id="postsContainer" className="">
