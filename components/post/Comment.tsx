@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import StyledButton from '../StyledButton'
+import { useDisplayName } from '../../hooks/useDisplayName'
 
 const PostComment = ({ comment }: { comment: Comment }) => {
   // Get the user that this comment was postedBy:
@@ -14,20 +15,7 @@ const PostComment = ({ comment }: { comment: Comment }) => {
   } = usePostedBy(comment.postedBy._ref)
 
   // Calculate what the displayName of this user should be: either userName or their full name
-  const displayName = useMemo(() => {
-    // Calculate a display name when the user has been fetched
-    if (!userLoading && !isError) {
-      if (postedByUser.userName) return `@${postedByUser.userName}`
-      return `${postedByUser.firstName} ${postedByUser.lastName.slice(0, 1)}.`
-    } else if (isError) {
-      return 'error fetching user'
-    }
-  }, [
-    userLoading,
-    postedByUser?.userName,
-    postedByUser?.firstName,
-    postedByUser?.lastName,
-  ])
+  const displayName = useDisplayName({user: postedByUser, userLoading, userError: isError})
 
   // Replies:
   // Limit # of replies shown (like the parent comment)
@@ -36,7 +24,7 @@ const PostComment = ({ comment }: { comment: Comment }) => {
   // Build array of replies if applicable to this comment:
   const displayedReplies = useMemo(() => {
     if (comment?.replies) {
-      console.log(comment?.replies)
+      // console.log(comment?.replies)
       return comment.replies
         .slice(0, repliesShown)
         .map((reply) => (

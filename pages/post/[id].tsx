@@ -15,6 +15,15 @@ import { Post } from '../../types/Post'
 import Image from 'next/image'
 import { buildUrlFor } from '../../sanity-scripts/client'
 import { client } from '../../sanity-scripts/client' // for prefetching data from server
+import { useUser } from '../../hooks/useUser'
+import { useSession } from 'next-auth/react'
+import { Session } from '../../types/Session'
+import { v4 as uuidv4 } from 'uuid'
+import { useQueryClient } from 'react-query'
+import { User } from '../../types/User'
+import { useAnyUserById } from '../../hooks/useAnyUserById'
+import { useDisplayName } from '../../hooks/useDisplayName'
+import Link from 'next/link'
 
 type Props = {
   initialData: Post
@@ -22,13 +31,18 @@ type Props = {
 
 // Depends on User to be signed in:
 const PostDetails: NextPage<Props> = ({ initialData }) => {
-  const { id: postID } = useRouter().query
+  const { id: postID }: { id: string } = useRouter().query
 
   const { post, isLoading, isError } = usePostDetail(postID, initialData)
 
+  // Session status will determine whether or not the 'logged-in'
+  // functionality will be added to this page's components or not
+  const { data: session, status }: { data: Session; status: string } =
+    useSession()
+
   if (isLoading) return <Loading />
 
-  if (isError) return <Error statusCode={401} />
+  if (isError || typeof post === 'undefined') return <Error statusCode={401} />
 
   return (
     <main className="p-10 sm:mx-auto sm:max-w-[90vw] lg:grid lg:grid-cols-2 lg:gap-10 2xl:gap-x-[14rem]">
@@ -36,6 +50,8 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
         <h1 className="mb-5 max-w-screen-md text-3xl font-bold">
           {post.title}
         </h1>
+
+        <OriginalPoster postedByUserId={post.postedBy._ref} />
 
         <div className="relative my-5 h-[50vh] max-w-screen-md">
           <Image
@@ -56,12 +72,16 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
             id="likeGroup"
             className={`
             absolute top-3 right-3 
-            w-max items-center rounded-2xl bg-gray-800 
-            bg-opacity-70 p-3 flex
+            flex w-max items-center rounded-2xl 
+            bg-gray-800 bg-opacity-70 p-3
             `}
           >
             {/* desktop like count / btn */}
-            <LikeBtn />
+            <LikeBtn
+              likes={post.likes}
+              userID={status === 'authenticated' ? session?.user?.id : null}
+              {...{ postID }}
+            />
             <p className="mx-2 inline text-white">
               {post.likes ? post.likes.length.toLocaleString() : '0'}
             </p>
@@ -91,7 +111,12 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
         <h1 className="my-4 max-w-screen-sm text-xl  font-semibold">
           Comments ({post.comments?.length ? post.comments?.length : '0'}):
         </h1>
-        <NewCommentForm />
+        {status === 'authenticated' && (
+          <NewCommentForm postID={post._id} userID={session?.user?.id} />
+        )}
+        {status === 'unauthenticated' && (
+          <p className="">Please sign in to post a comment.</p>
+        )}
         {post.comments && <CommentSection comments={post.comments} />}
       </div>
     </main>
@@ -100,10 +125,86 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
 
 export default PostDetails
 
-const NewCommentForm = () => {
+const OriginalPoster = ({
+  postedByUserId,
+}: {
+  postedByUserId: Post['postedBy']['_ref']
+}) => {
+  const { user, isLoading, isError } = useAnyUserById(postedByUserId)
+
+  // Calculate what the displayName of this user should be: either userName or their full name
+  const displayName = useDisplayName({user, userLoading:isLoading, userError:isError})
+
+  if (isLoading) return <Loading />
+
+  if (isError || typeof user === 'undefined') return <Error statusCode={401} />
+
+  return (
+    <div id="userNameGroup" className="flex items-center">
+      <Image
+        width="40px"
+        height="40px"
+        className="inline-block rounded-full border-4 border-white shadow-sm"
+        src={
+          user.profileImg
+            ? user.profileImg
+            : 'https://source.unsplash.com/70x70/?nature,photography,technology'
+        }
+      />
+      <Link href={`/user/${user._id}`}><a className='ml-3 text-xl text-gray-600 hover:text-gray-400'>{displayName}</a></Link>
+    </div>
+  )
+}
+
+const NewCommentForm = ({
+  postID,
+  userID,
+}: {
+  postID: Post['_id']
+  userID: User['_id'] | null
+}) => {
+  const [textAreaVal, setTextAreaVal] = useState('')
+
+  // queryClient: used to rerender the page with mutated data once a new comment is posted
+  const queryClient = useQueryClient()
+
   const postNewComment = () => {
-    // TODO: post new comment to sanity
-    console.log('comment posted')
+    // TODO: add reply POST functionality
+    if (textAreaVal === '' || textAreaVal.length <= 2) {
+      alert(
+        'Please type in a comment greater than two characters before submitting!'
+      )
+      return
+    } else {
+      console.log('comment submitted as:', textAreaVal)
+
+      client
+        .patch(postID) // target the current post
+        .setIfMissing({ comments: [] }) // add a comments array if missing from obj
+        .insert('after', 'comments[-1]', [
+          {
+            _key: uuidv4(),
+            _type: 'comment',
+            comment: textAreaVal,
+            postedBy: {
+              _type: 'postedBy',
+              _ref: userID,
+            },
+            timeStamp: new Date().toJSON(),
+          },
+        ]) // insert a new Like at the end of the likes array
+        .commit() // commit changes; promise is returned signifying error or success state
+        .then((updatedPost) => {
+          console.log('Hurray, you commented on this post!')
+          queryClient.setQueryData(['postDetails'], updatedPost)
+        })
+        .catch((err) => {
+          console.error('Oh no, the update failed: ', err.message)
+          alert(
+            `Sorry, we couldn't post your comment at this time. Please try again later. Server response: ${err.message}`
+          )
+        })
+    }
   }
 
   return (
@@ -111,16 +212,16 @@ const NewCommentForm = () => {
       <textarea
         placeholder="Post a comment..."
         className="h-[150px] flex-1 resize-none rounded-xl bg-gray-300 p-2"
+        value={textAreaVal}
+        onChange={(e) => setTextAreaVal(e.target.value)}
       ></textarea>
-      <div className="">
-        <StyledButton
-          disabled={false}
-          onClick={postNewComment}
-          roundingClass={'rounded-lg'}
-        >
-          Submit
-        </StyledButton>
-      </div>
+      <StyledButton
+        disabled={false}
+        onClick={postNewComment}
+        roundingClass={'rounded-lg'}
+      >
+        Submit
+      </StyledButton>
     </div>
   )
 }

@@ -8,7 +8,7 @@ export const useUser: (
   session: Session | null,
   status: string
 ) => {
-  user: User | null
+  user: User | undefined
   isLoading: boolean
   isError: boolean
   error: any
@@ -19,7 +19,7 @@ export const useUser: (
     isLoading,
     isError,
     error,
-  } = useQuery(
+  } = useQuery<User>(
     ['getUser', session, status],
     () => client.fetch(userQuery(session.user.id)),
     { enabled: status === 'authenticated' }

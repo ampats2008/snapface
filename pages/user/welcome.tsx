@@ -17,7 +17,7 @@ const UserMenu: NextPage = () => {
   }, [])
 
   useEffect(() => {
-    console.log('login status:', status);
+    // console.log('login status:', status);
     if (status === 'unauthenticated') router.push('/')
   }, [status])  
   

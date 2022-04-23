@@ -2,8 +2,11 @@ import { useQuery } from 'react-query'
 import { client } from '../sanity-scripts/client'
 import { Post } from '../types/Post'
 
-export const usePostDetail: (postId:string, initialData:Post) => {
-  post: Post
+export const usePostDetail: (
+  postId: string,
+  initialData: Post
+) => {
+  post: Post | undefined
   isLoading: boolean
   isError: boolean
 } = (postId, initialData) => {
@@ -18,7 +21,10 @@ export const usePostDetail: (postId:string, initialData:Post) => {
     data: post,
     isLoading,
     isError,
-  } = useQuery('get-post-details', () => client.fetch(query), {initialData})
+  } = useQuery<Post>(['postDetails'], () => client.fetch(query), {
+    initialData,
+    refetchOnWindowFocus: false,
+  })
 
   return { post, isLoading, isError }
 }

@@ -17,6 +17,7 @@ const StyledButton = ({
 }: Props) => {
   return (
     <button
+      type="button"
       className={`${btnType} flex items-center ${roundingClass}`}
       {...{ onClick, disabled }}
     >

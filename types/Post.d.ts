@@ -11,8 +11,8 @@ export interface Post {
   postedBy: PostedBy
   tags: string[]
   title: string
-  likes: Like[]
-  comments: Comment[]
+  likes?: Like[]
+  comments?: Comment[]
 }
 
 export interface Category {

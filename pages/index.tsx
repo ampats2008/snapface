@@ -7,7 +7,6 @@ import { useUser } from '../hooks/useUser'
 
 const Home: NextPage = () => {
 
-  // const { user, isLoading, isLoggedIn } = useUser() // get the current user
   const {data: session, status} = useSession()
 
   const router = useRouter()
@@ -15,12 +14,7 @@ const Home: NextPage = () => {
   useEffect(() => {
     // scroll to top on mount
     window.scrollTo(0,0)
-    // localStorage.clear()
   }, [])
-
-  useEffect(()=> {
-    console.log(session);
-  }, [session])
 
   useEffect(() => {
     console.log('login status:', status);
