@@ -220,7 +220,7 @@ const ContextMenu = ({
       {menuOpened && (
         <div
           id="dropdown"
-          className="absolute top-7 right-0 rounded-lg bg-gray-50 shadow-sm"
+          className="absolute top-7 right-0 rounded-lg bg-white shadow-md"
         >
           {showEditDelete && (
             <>
