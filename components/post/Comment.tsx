@@ -308,11 +308,11 @@ const NewReplyForm = ({
   return (
     <div
       id="replyDummyComment"
-      className="my-5 rounded-3xl bg-gray-300 p-3 shadow-sm"
+      className="my-5 rounded-[2rem] bg-gray-300 shadow-sm"
     >
       <div
         id="commentHead"
-        className="flex items-center rounded-full bg-gray-100 p-2"
+        className="flex items-center rounded-full bg-gray-100 p-2 shadow-sm"
       >
         {status !== 'loading' && (
           <>
@@ -333,7 +333,10 @@ const NewReplyForm = ({
           <MdCancel className="ml-2 h-6 w-6 fill-gray-500 group-hover:fill-red-400" />
         </button>
       </div>
-      <div id="replyForm" className="mt-4 flex items-center justify-between">
+      <div
+        id="replyForm"
+        className="mt-4 flex items-center justify-between px-4"
+      >
         <textarea
           placeholder={`Type your reply here...`}
           className="h-[100px] w-[80%] resize-none rounded-xl bg-gray-300 p-2"
