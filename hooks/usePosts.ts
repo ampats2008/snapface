@@ -33,7 +33,7 @@ export const usePosts: (filterBy: string, userId?: string) => {
     data: posts,
     isLoading,
     isError,
-  } = useQuery(['discover-posts', query], () => client.fetch(query), {
+  } = useQuery(['discover-posts', filterBy], () => client.fetch(query), {
     refetchOnWindowFocus: false,
   })
 

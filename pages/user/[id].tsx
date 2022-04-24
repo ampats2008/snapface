@@ -46,7 +46,7 @@ const UserProfile: NextPage<{ initialData: User }> = ({
       {/* Posts feed with controls for filtering by *liked* and *postedBy* current user */}
       <ProfilePostsFilter {...{ setFilter, filter }} />
       <section className="mb-10">
-        <Feed filterBy={filter} userId={session?.user?.id} />
+        <Feed filterBy={filter} userId={pageUser._id} />
       </section>
     </main>
   )

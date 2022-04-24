@@ -7,6 +7,8 @@ import {
   DestinationLink,
   LikeBtn,
   Loading,
+  NewCommentForm,
+  OriginalPoster,
   StyledButton,
   Tag,
 } from '../../components'
@@ -15,14 +17,11 @@ import { Post } from '../../types/Post'
 import Image from 'next/image'
 import { buildUrlFor } from '../../sanity-scripts/client'
 import { client } from '../../sanity-scripts/client' // for prefetching data from server
-import { useUser } from '../../hooks/useUser'
 import { useSession } from 'next-auth/react'
 import { Session } from '../../types/Session'
 import { v4 as uuidv4 } from 'uuid'
 import { useQueryClient } from 'react-query'
 import { User } from '../../types/User'
-import { useAnyUserById } from '../../hooks/useAnyUserById'
-import { useDisplayName } from '../../hooks/useDisplayName'
 import Link from 'next/link'
 
 type Props = {
@@ -37,8 +36,13 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
 
   // Session status will determine whether or not the 'logged-in'
   // functionality will be added to this page's components or not
-  const { data: session, status }: { data: Session; status: string } =
-    useSession()
+  const {
+    data: session,
+    status,
+  }: {
+    data: Session
+    status: 'authenticated' | 'unauthenticated' | 'loading'
+  } = useSession()
 
   if (isLoading) return <Loading />
 
@@ -85,7 +89,7 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
             </p>
           </div>
         </div>
-        
+
         <OriginalPoster postedByUserId={post.postedBy._ref} />
 
         <span className="text-sm text-gray-400">Description:</span>
@@ -115,7 +119,13 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
           <NewCommentForm postID={post._id} userID={session?.user?.id} />
         )}
         {status === 'unauthenticated' && (
-          <p className="">Please sign in to post a comment.</p>
+          <p className="">
+            Please{' '}
+            <Link href={'/login'}>
+              <a className="text-brand-600 hover:underline">sign in</a>
+            </Link>{' '}
+            to post a comment.
+          </p>
         )}
         {post.comments && <CommentSection comments={post.comments} />}
       </div>
@@ -124,118 +134,6 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
 }
 
 export default PostDetails
-
-const OriginalPoster = ({
-  postedByUserId,
-}: {
-  postedByUserId: Post['postedBy']['_ref']
-}) => {
-  const { user, isLoading, isError } = useAnyUserById(postedByUserId)
-
-  // Calculate what the displayName of this user should be: either userName or their full name
-  const displayName = useDisplayName({
-    user,
-    userLoading: isLoading,
-    userError: isError,
-  })
-
-  if (isLoading) return <Loading />
-
-  if (isError || typeof user === 'undefined') return <Error statusCode={401} />
-
-  return (
-    <Link href={`/user/${user._id}`}>
-      <a>
-        <div
-          id="userNameGroup"
-          className="flex w-max cursor-pointer items-center rounded-full bg-gray-300 my-5 pr-4 py-0 hover:opacity-80"
-        >
-          <Image
-            width="40px"
-            height="40px"
-            className="inline-block rounded-full border-4 border-white shadow-sm"
-            src={
-              user.profileImg
-                ? user.profileImg
-                : 'https://source.unsplash.com/70x70/?nature,photography,technology'
-            }
-          />
-          <p className="ml-3 text-xl text-gray-600">{displayName}</p>
-        </div>
-      </a>
-    </Link>
-  )
-}
-
-const NewCommentForm = ({
-  postID,
-  userID,
-}: {
-  postID: Post['_id']
-  userID: User['_id'] | null
-}) => {
-  const [textAreaVal, setTextAreaVal] = useState('')
-
-  // queryClient: used to rerender the page with mutated data once a new comment is posted
-  const queryClient = useQueryClient()
-
-  const postNewComment = () => {
-    // TODO: add reply POST functionality
-    if (textAreaVal === '' || textAreaVal.length <= 2) {
-      alert(
-        'Please type in a comment greater than two characters before submitting!'
-      )
-      return
-    } else {
-      console.log('comment submitted as:', textAreaVal)
-
-      client
-        .patch(postID) // target the current post
-        .setIfMissing({ comments: [] }) // add a comments array if missing from obj
-        .insert('after', 'comments[-1]', [
-          {
-            _key: uuidv4(),
-            _type: 'comment',
-            comment: textAreaVal,
-            postedBy: {
-              _type: 'postedBy',
-              _ref: userID,
-            },
-            timeStamp: new Date().toJSON(),
-          },
-        ]) // insert a new Like at the end of the likes array
-        .commit() // commit changes; promise is returned signifying error or success state
-        .then((updatedPost) => {
-          console.log('Hurray, you commented on this post!')
-          queryClient.setQueryData(['postDetails'], updatedPost)
-        })
-        .catch((err) => {
-          console.error('Oh no, the update failed: ', err.message)
-          alert(
-            `Sorry, we couldn't post your comment at this time. Please try again later. Server response: ${err.message}`
-          )
-        })
-    }
-  }
-
-  return (
-    <div className="flex items-center gap-4">
-      <textarea
-        placeholder="Post a comment..."
-        className="h-[150px] flex-1 resize-none rounded-xl bg-gray-300 p-2"
-        value={textAreaVal}
-        onChange={(e) => setTextAreaVal(e.target.value)}
-      ></textarea>
-      <StyledButton
-        disabled={false}
-        onClick={postNewComment}
-        roundingClass={'rounded-lg'}
-      >
-        Submit
-      </StyledButton>
-    </div>
-  )
-}
 
 export async function getServerSideProps(context: NextPageContext) {
   const query = `*[_type == 'post' && _id == '${context.query.id}'][0]`
