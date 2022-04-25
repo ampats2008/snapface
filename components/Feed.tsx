@@ -5,7 +5,7 @@ import { usePosts } from '../hooks/usePosts'
 import { Loading, Post } from './index'
 
 type Props = {
-  filterBy?: string,
+  filterBy?: string
   userId?: string
 }
 
@@ -17,10 +17,10 @@ const Feed: FC<Props> = ({ filterBy = 'all', userId }) => {
 
   if (isLoading) return <Loading />
 
-  if (isError) return <Error statusCode={401} /> // replace this with my own error component 
+  if (isError) return <Error statusCode={401} /> // replace this with my own error component
 
   return (
-    <div id="postsContainer" className="">
+    <div id="postsContainer" className="flex-wrap sm:flex">
       {posts.map((post) => (
         <Post
           key={`${post.postedBy._ref}_${post.title}_${post._id}`}

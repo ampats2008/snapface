@@ -1,7 +1,6 @@
 import type { NextPage, NextPageContext } from 'next'
 import Error from 'next/error'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
 import {
   CommentSection,
   DestinationLink,
@@ -9,7 +8,6 @@ import {
   Loading,
   NewCommentForm,
   OriginalPoster,
-  StyledButton,
   Tag,
 } from '../../components'
 import { usePostDetail } from '../../hooks/userPostDetail'
@@ -19,9 +17,6 @@ import { buildUrlFor } from '../../sanity-scripts/client'
 import { client } from '../../sanity-scripts/client' // for prefetching data from server
 import { useSession } from 'next-auth/react'
 import { Session } from '../../types/Session'
-import { v4 as uuidv4 } from 'uuid'
-import { useQueryClient } from 'react-query'
-import { User } from '../../types/User'
 import Link from 'next/link'
 
 type Props = {
@@ -119,7 +114,7 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
           <NewCommentForm postID={post._id} userID={session?.user?.id} />
         )}
         {status === 'unauthenticated' && (
-          <p className="">
+          <p>
             Please{' '}
             <Link href={'/login'}>
               <a className="text-brand-600 hover:underline">sign in</a>

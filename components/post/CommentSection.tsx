@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Comment } from '../../types/Post'
-import StyledButton from '../StyledButton'
-import PostComment from './Comment'
+import { StyledButton, PostComment } from '../'
 
 type Props = {
   comments: Comment[]
@@ -27,7 +26,7 @@ const CommentSection = ({ comments }: Props) => {
             {...{ comment }}
           />
         ))}
-      <div id="showMoreBtnContainer" className="flex justify-center mt-5">
+      <div id="showMoreBtnContainer" className="mt-5 flex justify-center">
         {commentsShown < comments.length && (
           <StyledButton
             onClick={() =>

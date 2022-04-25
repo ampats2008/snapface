@@ -1,24 +1,23 @@
 import { useState } from 'react'
 import { useQueryClient } from 'react-query'
-import { client } from '../../sanity-scripts/client'
-import { Post } from '../../types/Post'
-import { User } from '../../types/User'
-import { StyledButton } from '../'
+import { client } from '../sanity-scripts/client'
 import { v4 as uuidv4 } from 'uuid'
+import { Post } from '../types/Post'
+import { User } from '../types/User'
+import { useRouter } from 'next/router'
 
-const NewCommentForm = ({
-  postID,
-  userID,
-}: {
-  postID: Post['_id']
+type Args = {
   userID: User['_id'] | null
-}) => {
+}
+
+export const useCommentOrReplyForm = ({ userID }: Args) => {
+  const { id: postID }: { id: string } = useRouter().query
   const [textAreaVal, setTextAreaVal] = useState('')
 
   // queryClient: used to rerender the page with mutated data once a new comment is posted
   const queryClient = useQueryClient()
 
-  const postNewComment = () => {
+  const postCommentOrReply = () => {
     if (textAreaVal === '' || textAreaVal.length <= 2) {
       alert(
         'Please type in a comment greater than two characters before submitting!'
@@ -46,6 +45,7 @@ const NewCommentForm = ({
         .then((updatedPost) => {
           console.log('Hurray, you commented on this post!')
           queryClient.setQueryData(['postDetails'], updatedPost)
+          setTextAreaVal('')
         })
         .catch((err) => {
           console.error('Oh no, the update failed: ', err.message)
@@ -56,23 +56,5 @@ const NewCommentForm = ({
     }
   }
 
-  return (
-    <div className="flex items-center gap-4">
-      <textarea
-        placeholder="Post a comment..."
-        className="h-[150px] flex-1 resize-none rounded-xl bg-gray-300 p-2"
-        value={textAreaVal}
-        onChange={(e) => setTextAreaVal(e.target.value)}
-      ></textarea>
-      <StyledButton
-        disabled={false}
-        onClick={postNewComment}
-        roundingClass={'rounded-lg'}
-      >
-        Submit
-      </StyledButton>
-    </div>
-  )
+  return { textAreaVal, setTextAreaVal, postCommentOrReply }
 }
-
-export default NewCommentForm
