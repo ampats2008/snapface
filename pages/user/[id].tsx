@@ -28,10 +28,13 @@ const UserProfile: NextPage<{ initialData: User }> = ({
   // useEffect(() => {
   //   console.log(session)
   // }, [session])
-
+  // TODO: EDIT PROFILE DETAILS:
   // TODO: if the user from useUser matches the user from pageUser, then:
-  // TODO: the user is currently logged in and viewing their profile page.
+  // TODO: the user is currently logged in and viewing their own profile page.
   // TODO: this means that we should enable the user to edit their profile details and POST them to Sanity.
+
+  // TODO: CREATE NEW POST:
+  // TODO: allow the user to create a new post and POST it to Sanity
 
   // Call for posts based on filter value
   const [filter, setFilter] = useState('myPosts')

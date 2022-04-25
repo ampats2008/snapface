@@ -3,7 +3,10 @@ import { useQuery } from 'react-query'
 import { client } from '../sanity-scripts/client'
 import { Post } from '../types/Post'
 
-export const usePosts: (filterBy: string, userId?: string) => {
+export const usePosts: (
+  filterBy: string,
+  userId?: string
+) => {
   posts: Post[]
   isLoading: boolean
   isError: boolean
@@ -16,11 +19,9 @@ export const usePosts: (filterBy: string, userId?: string) => {
       return `*[_type == 'post'][0...100] | order(_createdAt desc)`
 
     if (filterBy === 'myPosts') {
-      // TODO: set query to fetch posts of given user
       console.log('fetching my posts')
       return `*[_type == 'post' && postedBy._ref == '${userId}'][0...100] | order(_createdAt desc)`
     } else if (filterBy === 'myLikedPosts') {
-      // TODO: set query to fetch liked posts of given user
       console.log('fetching my liked posts')
       return `*[_type == 'post' && '${userId}' in likes[].postedBy._ref][0...100] | order(_createdAt desc)`
     } else {
