@@ -21,7 +21,8 @@ export const useCommentReplies = (
         .map((reply) => (
           <PostComment
             key={`${reply._key}-${reply.comment.comment}-${reply.comment.postedBy._ref}`}
-            comment={reply.comment}
+            commentType={'reply'}
+            comment={{ ...reply.comment, _key: reply._key }}
           />
         ))
     }

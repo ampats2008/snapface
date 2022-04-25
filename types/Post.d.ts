@@ -47,7 +47,7 @@ export interface Comment {
 }
 
 export interface Reply {
-  comment: Comment
+  comment: Omit<Comment, '_key'>
   _key: string
   _type: string
 }

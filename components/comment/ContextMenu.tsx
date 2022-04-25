@@ -1,24 +1,31 @@
 import { Dispatch, SetStateAction, useState } from 'react'
-import { Comment } from '../../types/Post'
+import { Comment, Reply } from '../../types/Post'
 import { BiDotsHorizontalRounded } from 'react-icons/bi'
 import { useCommentActions } from '../../hooks/useCommentActions'
 import { MenuItem } from '../'
 import { AiFillDelete, AiFillEdit } from 'react-icons/ai'
 import { HiReply } from 'react-icons/hi'
 
+type Props = {
+  showEditDelete: boolean
+  showReply: boolean
+  commentKey: Comment['_key'] | Reply['_key']
+  commentType?: 'comment' | 'reply'
+  setReplyFormOpened: Dispatch<SetStateAction<boolean>>
+}
+
 const ContextMenu = ({
   showEditDelete,
-  commentId,
+  showReply,
+  commentKey,
+  commentType = 'comment',
   setReplyFormOpened,
-}: {
-  showEditDelete: boolean
-  commentId: Comment['_key']
-  setReplyFormOpened: Dispatch<SetStateAction<boolean>>
-}) => {
+}: Props) => {
   const [menuOpened, setMenuOpened] = useState(false)
 
   const { handleEditComment, handleDeleteComment } = useCommentActions({
-    commentId,
+    commentKey,
+    commentType,
   })
 
   return (
@@ -59,16 +66,18 @@ const ContextMenu = ({
               </MenuItem>
             </>
           )}
-          <MenuItem
-            onClick={() => {
-              setMenuOpened(false)
-              setReplyFormOpened(true)
-            }}
-            className="hover:bg-blue-100"
-          >
-            <HiReply className="mr-2 h-4 w-4 fill-blue-500" />
-            Reply
-          </MenuItem>
+          {showReply && (
+            <MenuItem
+              onClick={() => {
+                setMenuOpened(false)
+                setReplyFormOpened(true)
+              }}
+              className="hover:bg-blue-100"
+            >
+              <HiReply className="mr-2 h-4 w-4 fill-blue-500" />
+              Reply
+            </MenuItem>
+          )}
         </div>
       )}
     </div>

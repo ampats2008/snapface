@@ -1,4 +1,4 @@
-import { Comment } from '../../types/Post'
+import { Comment, Reply } from '../../types/Post'
 import { usePostedBy } from '../../hooks/usePostedBy'
 import { useDisplayName } from '../../hooks/useDisplayName'
 import { useState } from 'react'
@@ -13,8 +13,14 @@ import {
 } from '../'
 import RepliesSection from './RepliesSection'
 
-const PostComment = ({ comment }: { comment: Comment }) => {
+type Props = {
+  comment: Comment
+  commentType?: 'comment' | 'reply'
+}
+
+const PostComment = ({ comment, commentType = 'comment' }: Props) => {
   // Get the user that this comment was postedBy:
+  // !: this hook could be eliminated by including the '->' operator in the GROQ query for the Post
   const {
     postedByUser,
     isLoading: userLoading,
@@ -57,9 +63,10 @@ const PostComment = ({ comment }: { comment: Comment }) => {
           {/* Context menu -- for delete / edit / reply buttons */}
           {status === 'authenticated' && !userLoading && (
             <ContextMenu
-              commentId={comment._key}
+              commentKey={comment._key}
               showEditDelete={session.user.id === postedByUser._id}
-              {...{ setReplyFormOpened }}
+              showReply={commentType === 'comment'}
+              {...{ setReplyFormOpened, commentType }}
             />
           )}
         </div>
@@ -68,7 +75,7 @@ const PostComment = ({ comment }: { comment: Comment }) => {
         </p>
       </div>
       {replyFormOpened && (
-        <NewReplyForm {...{ userLoading, postedByUser, setReplyFormOpened }} />
+        <NewReplyForm commentKey={comment._key} {...{ setReplyFormOpened }} />
       )}
       <RepliesSection {...{ comment }} />
     </>

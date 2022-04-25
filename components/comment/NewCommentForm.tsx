@@ -8,7 +8,7 @@ const NewCommentForm = ({ userID }: { userID: User['_id'] | null }) => {
     textAreaVal,
     setTextAreaVal,
     postCommentOrReply: postNewComment,
-  } = useCommentOrReplyForm({ userID })
+  } = useCommentOrReplyForm({ userID, type: 'comment' })
 
   return (
     <div className="flex items-center gap-4">

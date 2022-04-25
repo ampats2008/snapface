@@ -9,13 +9,11 @@ import { DateTimePosted, DisplayName, ProfilePicture, StyledButton } from '..'
 import { useCommentOrReplyForm } from '../../hooks/useCommentOrReplyForm'
 
 const NewReplyForm = ({
-  userLoading,
-  postedByUser,
   setReplyFormOpened,
+  commentKey,
 }: {
-  userLoading: boolean
-  postedByUser: User
   setReplyFormOpened: Dispatch<SetStateAction<boolean>>
+  commentKey: Comment['_key']
 }) => {
   // get session info for replyHead
   const { data: session, status }: { data: Session; status: string } =
@@ -29,13 +27,17 @@ const NewReplyForm = ({
 
   // *Data needed for reply submission:
   // 1. 'current userId' (via useSession)
-  // 2. 'userId' and/or '_key' of comment being replied to
-  // 3. 'postId' (via useRouter to avoid prop-drilling)
+  // 2. '_key' of comment being replied to
   const {
     textAreaVal,
     setTextAreaVal,
     postCommentOrReply: postNewReply,
-  } = useCommentOrReplyForm({ userID })
+  } = useCommentOrReplyForm({
+    userID: status === 'authenticated' ? session.user.id : null,
+    commentKey,
+    setReplyFormOpened,
+    type: 'reply',
+  })
 
   return (
     <div
@@ -49,10 +51,18 @@ const NewReplyForm = ({
         {status !== 'loading' && (
           <>
             <ProfilePicture
-              {...{ userLoading, user: session.user, displayName }}
+              {...{
+                userLoading: status === 'loading',
+                user: session.user,
+                displayName,
+              }}
             />
             <DisplayName
-              {...{ userLoading, user: session.user, displayName }}
+              {...{
+                userLoading: status === 'loading',
+                user: session.user,
+                displayName,
+              }}
             />
           </>
         )}
@@ -74,7 +84,7 @@ const NewReplyForm = ({
         ></textarea>
         <StyledButton
           disabled={false}
-          onClick={postReply}
+          onClick={postNewReply}
           roundingClass={'rounded-lg'}
         >
           Reply
