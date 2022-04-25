@@ -8,17 +8,25 @@ import {
   ContextMenu,
   DateTimePosted,
   DisplayName,
+  EditForm,
   NewReplyForm,
   ProfilePicture,
 } from '../'
 import RepliesSection from './RepliesSection'
+import { User } from '../../types/User'
+import { useCommentActions } from '../../hooks/useCommentActions'
 
 type Props = {
   comment: Comment
   commentType?: 'comment' | 'reply'
+  replyParentKey?: Comment['_key'] | null
 }
 
-const PostComment = ({ comment, commentType = 'comment' }: Props) => {
+const PostComment = ({
+  comment,
+  commentType = 'comment',
+  replyParentKey = null,
+}: Props) => {
   // Get the user that this comment was postedBy:
   // !: this hook could be eliminated by including the '->' operator in the GROQ query for the Post
   const {
@@ -49,33 +57,65 @@ const PostComment = ({ comment, commentType = 'comment' }: Props) => {
     status: 'authenticated' | 'unauthenticated' | 'loading'
   } = useSession()
 
+  // Logic for Comment CRUD Actions: in 'useCommentActions' and 'useCommentOrReplyForm' hooks
   const [replyFormOpened, setReplyFormOpened] = useState(false)
+  const [editFormOpened, setEditFormOpened] = useState(false)
+  const { handleDeleteComment, handleEditComment } = useCommentActions({
+    commentKey: comment._key,
+    commentType,
+    setEditFormOpened,
+  })
 
   return (
     <>
       <div id="comment" className="my-5 rounded-lg bg-gray-100 p-3 shadow-sm">
         <div id="commentHead" className="flex items-center">
           <ProfilePicture
-            {...{ userLoading, user: postedByUser, displayName }}
+            {...{
+              userLoading,
+              user: postedByUser,
+              displayName,
+            }}
           />
-          <DisplayName {...{ userLoading, user: postedByUser, displayName }} />
-          <DateTimePosted {...{ timePosted }} />
+          <DisplayName
+            {...{
+              userLoading,
+              user: postedByUser,
+              displayName,
+            }}
+          />
+          <DateTimePosted
+            {...{
+              timePosted,
+            }}
+          />
           {/* Context menu -- for delete / edit / reply buttons */}
           {status === 'authenticated' && !userLoading && (
             <ContextMenu
-              commentKey={comment._key}
               showEditDelete={session.user.id === postedByUser._id}
-              showReply={commentType === 'comment'}
-              {...{ setReplyFormOpened, commentType }}
+              {...{
+                setReplyFormOpened,
+                setEditFormOpened,
+                handleDeleteComment,
+              }}
             />
           )}
         </div>
-        <p id="commentBody" className="my-2 leading-[1.7]">
-          {comment.comment}
-        </p>
+        {!editFormOpened ? (
+          <CommentBody commentBody={comment.comment} />
+        ) : (
+          <EditForm
+            commentKey={comment._key}
+            commentBody={comment.comment}
+            {...{ replyParentKey, setEditFormOpened, handleEditComment }}
+          />
+        )}
       </div>
       {replyFormOpened && (
-        <NewReplyForm commentKey={comment._key} {...{ setReplyFormOpened }} />
+        <NewReplyForm
+          commentKey={replyParentKey ? replyParentKey : comment._key}
+          {...{ setReplyFormOpened }}
+        />
       )}
       <RepliesSection {...{ comment }} />
     </>
@@ -83,3 +123,11 @@ const PostComment = ({ comment, commentType = 'comment' }: Props) => {
 }
 
 export default PostComment
+
+const CommentBody = ({ commentBody }: { commentBody: Comment['comment'] }) => {
+  return (
+    <p id="commentBody" className="my-2 leading-[1.7]">
+      {commentBody}
+    </p>
+  )
+}

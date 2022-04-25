@@ -1,32 +1,24 @@
 import { Dispatch, SetStateAction, useState } from 'react'
 import { Comment, Reply } from '../../types/Post'
 import { BiDotsHorizontalRounded } from 'react-icons/bi'
-import { useCommentActions } from '../../hooks/useCommentActions'
 import { MenuItem } from '../'
 import { AiFillDelete, AiFillEdit } from 'react-icons/ai'
 import { HiReply } from 'react-icons/hi'
 
 type Props = {
   showEditDelete: boolean
-  showReply: boolean
-  commentKey: Comment['_key'] | Reply['_key']
-  commentType?: 'comment' | 'reply'
+  handleDeleteComment: React.MouseEventHandler
   setReplyFormOpened: Dispatch<SetStateAction<boolean>>
+  setEditFormOpened: Dispatch<SetStateAction<boolean>>
 }
 
 const ContextMenu = ({
   showEditDelete,
-  showReply,
-  commentKey,
-  commentType = 'comment',
+  handleDeleteComment,
   setReplyFormOpened,
+  setEditFormOpened,
 }: Props) => {
   const [menuOpened, setMenuOpened] = useState(false)
-
-  const { handleEditComment, handleDeleteComment } = useCommentActions({
-    commentKey,
-    commentType,
-  })
 
   return (
     <div id="contextMenu" className="relative flex place-content-center">
@@ -47,7 +39,7 @@ const ContextMenu = ({
               <MenuItem
                 onClick={() => {
                   setMenuOpened(false)
-                  handleEditComment()
+                  setEditFormOpened(true)
                 }}
                 className="hover:bg-amber-100"
               >
@@ -66,18 +58,16 @@ const ContextMenu = ({
               </MenuItem>
             </>
           )}
-          {showReply && (
-            <MenuItem
-              onClick={() => {
-                setMenuOpened(false)
-                setReplyFormOpened(true)
-              }}
-              className="hover:bg-blue-100"
-            >
-              <HiReply className="mr-2 h-4 w-4 fill-blue-500" />
-              Reply
-            </MenuItem>
-          )}
+          <MenuItem
+            onClick={() => {
+              setMenuOpened(false)
+              setReplyFormOpened(true)
+            }}
+            className="hover:bg-blue-100"
+          >
+            <HiReply className="mr-2 h-4 w-4 fill-blue-500" />
+            Reply
+          </MenuItem>
         </div>
       )}
     </div>

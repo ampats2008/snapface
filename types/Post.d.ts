@@ -48,6 +48,8 @@ export interface Comment {
 
 export interface Reply {
   comment: Omit<Comment, '_key'>
+  // Note: in the DB, the reply{}.comment does not have a '_key' prop (which is why I've used Omit here.);
+  // however, when outputting the replies as Comment components, I added it back (see useCommentReplies)
   _key: string
   _type: string
 }

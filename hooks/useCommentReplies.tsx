@@ -22,6 +22,7 @@ export const useCommentReplies = (
           <PostComment
             key={`${reply._key}-${reply.comment.comment}-${reply.comment.postedBy._ref}`}
             commentType={'reply'}
+            replyParentKey={comment._key}
             comment={{ ...reply.comment, _key: reply._key }}
           />
         ))
