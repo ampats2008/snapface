@@ -13,7 +13,8 @@ type Props = {
 const Post = ({ post }: Props) => {
   const router = useRouter()
 
-  const { data: session, status }:{data: Session, status:string} = useSession()
+  const { data: session, status }: { data: Session; status: string } =
+    useSession()
 
   const goToPostDetailPage = () => {
     router.push(`/post/${post._id}`)
@@ -43,14 +44,14 @@ const Post = ({ post }: Props) => {
           <AltText title={post.title} />
         )}
 
-        {/* // !: Like button state not updating on the Discover page when clicked.
-        {(status === 'authenticated') && <LikeBtn
-          posClass={'absolute top-2 right-2'}
-          likes={post?.likes}
-          userID={session.user.id}
-          postID={post._id}
-        />} */}
-
+        {status === 'authenticated' && (
+          <LikeBtn
+            posClass={'absolute top-2 right-2 px-2 py-1'}
+            likes={post?.likes}
+            userID={session.user.id}
+            postID={post._id}
+          />
+        )}
         <DestinationLink
           posClass={'absolute bottom-2 left-2'}
           destinationURL={post.destination}

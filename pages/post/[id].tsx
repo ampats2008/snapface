@@ -64,25 +64,11 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
             destinationURL={post.destination}
             posClass={'absolute bottom-3 left-3'}
           />
-
-          <div
-            id="likeGroup"
-            className={`
-            absolute top-3 right-3 
-            flex w-max items-center rounded-2xl 
-            bg-gray-800 bg-opacity-70 p-3
-            `}
-          >
-            {/* desktop like count / btn */}
-            <LikeBtn
-              likes={post.likes}
-              userID={status === 'authenticated' ? session?.user?.id : null}
-              {...{ postID }}
-            />
-            <p className="mx-2 inline text-white">
-              {post.likes ? post.likes.length.toLocaleString() : '0'}
-            </p>
-          </div>
+          <LikeBtn
+            likes={post.likes}
+            userID={status === 'authenticated' ? session?.user?.id : null}
+            {...{ postID }}
+          />
         </div>
 
         <OriginalPoster postedByUserId={post.postedBy._ref} />
@@ -111,7 +97,7 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
           Comments ({post.comments?.length ? post.comments?.length : '0'}):
         </h1>
         {status === 'authenticated' && (
-          <NewCommentForm postID={post._id} userID={session?.user?.id} />
+          <NewCommentForm userID={session?.user?.id} />
         )}
         {status === 'unauthenticated' && (
           <p>
