@@ -25,9 +25,9 @@ const UserProfile: NextPage<{ initialData: User }> = ({
     error,
   } = useUser(session, status) // get the current user using the session.user.id
 
-  // useEffect(() => {
-  //   console.log(session)
-  // }, [session])
+  useEffect(() => {
+    console.log(session)
+  }, [session])
   // TODO: EDIT PROFILE DETAILS:
   // TODO: if the user from useUser matches the user from pageUser, then:
   // TODO: the user is currently logged in and viewing their own profile page.
@@ -44,7 +44,7 @@ const UserProfile: NextPage<{ initialData: User }> = ({
   if (isError) return <Error statusCode={401} />
 
   return (
-    <main>
+    <main className="mt-4 xl:mt-0">
       {pageUser && <ProfileBanner {...{ user: pageUser }} />}
       {/* Posts feed with controls for filtering by *liked* and *postedBy* current user */}
       <ProfilePostsFilter {...{ setFilter, filter }} />
