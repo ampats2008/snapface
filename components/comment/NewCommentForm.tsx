@@ -1,4 +1,3 @@
-import { Post } from '../../types/Post'
 import { User } from '../../types/User'
 import { StyledButton } from '../'
 import { useCommentOrReplyForm } from '../../hooks/useCommentOrReplyForm'
