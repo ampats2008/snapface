@@ -2,13 +2,19 @@ import * as React from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { NavLink } from './NavLink'
-import { useEffect, useRef } from 'react'
-import { useRouter } from 'next/router'
+import { useEffect, useRef, useState } from 'react'
+import { Router, useRouter } from 'next/router'
 import { BiRightArrowAlt } from 'react-icons/bi'
-import { useUser } from '../../hooks/useUser'
+import { FaUserCircle } from 'react-icons/fa'
 import { IoExitOutline } from 'react-icons/io5'
+import { MdOutlinePostAdd } from 'react-icons/md'
+import { useUser } from '../../hooks/useUser'
+
 import StyledButton from '../StyledButton'
-import { useSession, signIn, signOut } from "next-auth/react"
+import { useSession, signIn, signOut } from 'next-auth/react'
+import { Session } from '../../types/Session'
+import { ProfilePicture } from '..'
+import MenuItem from '../comment/MenuItem'
 
 type LayoutProps = {
   children: React.ReactNode
@@ -16,7 +22,8 @@ type LayoutProps = {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter()
-  const {data: session} = useSession()
+  const { data: session, status }: { data: Session; status: string } =
+    useSession()
 
   return (
     <>
@@ -63,15 +70,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </a>
             </Link>
           )}
-          
-          {session && (
-            <NavLink name="My Profile" link={`/user/${session.user.id}`} />
-          )}
 
-          {session && (
-            <StyledButton onClick={() => signOut({ callbackUrl: '/' })} disabled={false}>
-              Log out <IoExitOutline className="ml-2 inline-block h-5 w-5" />
-            </StyledButton>
+          {/* 
+              //TODO: Refactor this part of navbar:
+              //TODO: 1. Add Create Post button if authenticated
+              //TODO: 2. Merge my Profile and Log out into a Profile dropdown menu
+          */}
+
+          {status === 'authenticated' && (
+            <ProfileMenu {...{ session, status }} />
           )}
         </nav>
       </header>
@@ -86,3 +93,60 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 }
 
 export default Layout
+
+type Props = {
+  session: Session
+  status: 'loading' | 'unauthenticated' | 'authenticated'
+}
+
+const ProfileMenu = ({ session, status }: Props) => {
+  const [menuOpened, setMenuOpened] = useState(false)
+  const router = useRouter()
+  return (
+    <div className="relative flex items-center">
+      <ProfilePicture
+        userLoading={status === 'loading'}
+        user={session.user}
+        displayName={`${session.user.firstName} ${session.user.lastName}`}
+        customClickHandler={() => setMenuOpened((prev) => !prev)}
+      />
+      {menuOpened && (
+        <div
+          id="dropdown"
+          className="absolute top-12 right-0 w-max rounded-lg bg-gray-100 p-1 shadow-sm"
+        >
+          <MenuItem
+            onClick={() => {
+              router.push(`/user/${session.user.id}`)
+              setMenuOpened(false)
+            }}
+            className={'justify-end hover:bg-blue-100'}
+          >
+            My Profile{' '}
+            <FaUserCircle className="ml-2 inline-block h-5 w-5 text-blue-500" />
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              router.push(`/user/create/`)
+              setMenuOpened(false)
+            }}
+            className={'justify-end hover:bg-brand-100'}
+          >
+            Create Post{' '}
+            <MdOutlinePostAdd className="ml-2 inline-block h-5 w-5 text-brand-500" />
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              signOut({ callbackUrl: '/' })
+              setMenuOpened(false)
+            }}
+            className={'justify-end hover:bg-red-100'}
+          >
+            Log Out{' '}
+            <IoExitOutline className="ml-2 inline-block h-5 w-5 text-red-500" />
+          </MenuItem>
+        </div>
+      )}
+    </div>
+  )
+}
