@@ -1,19 +1,47 @@
 import { UploadedImagePreview, FileUploadBox } from '../../components'
-import { ChangeEvent, ReactNode, useEffect, useState } from 'react'
+import {
+  ChangeEvent,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react'
 import { client } from '../../sanity-scripts/client'
 import { SanityImageAssetDocument } from '@sanity/client'
 import { MdOutlineErrorOutline } from 'react-icons/md'
+import Select, { ActionMeta } from 'react-select'
 
 type Props = {}
-const CreatePostForm = ({}) => {
+const CreatePostForm = ({}: Props) => {
   // Use state to control form fields
   const [title, setTitle] = useState('')
   const [tags, setTags] = useState<string[]>([])
   const [destinationURL, setDestinationURL] = useState('')
   const [description, setDescription] = useState('')
-  const [categories, setCategories] = useState<string[]>([])
 
-  // values for image upload process
+  // values/state/eventHandlers for categories multiselect field
+  const [categoryOptions, setCategoryOptions] = useState<any | null>(null)
+
+  // fetch categories for multi-select box on mount
+  useEffect(() => {
+    client
+      .fetch(`*[_type == 'category']{"label":name, "value":name}`)
+      .then((res) => {
+        setCategoryOptions(res)
+      })
+      .catch((err) =>
+        console.error('Error fetching category options from server!', err)
+      )
+  }, [])
+
+  const [categories, setCategories] = useState<any | null>(null)
+
+  useEffect(() => {
+    console.log(categories)
+  }, [categories])
+
+  // values/state/eventHandlers for image upload process
   const MAX_IMAGE_SIZE_MB = 8
   const supportedFileTypes = 'PNG, JPG, SVG, GIF, and TIFF' // for error message and upload file box hint.
   const [uploadedImage, setUploadedImage] =
@@ -61,15 +89,50 @@ const CreatePostForm = ({}) => {
       })
   }
 
+  //TODO: organize the messy logic in this component
+
   return (
     <>
       <form>
-        <div id="row1-Cont" className="sm:flex sm:flex-wrap">
-          <div id="titleDescDest-Cont" className="">
-            {/* // TODO: add fields for every property of a Post document
-             */}
-            Title:
-            <br /> Desc: <br /> DestURL: <br />
+        <div id="row1-Cont" className="justify-evenly sm:flex sm:flex-wrap">
+          <div id="titleDescDest-Cont" className="my-8 sm:min-w-[50ch]">
+            <ShortTextInput
+              name={'Title'}
+              placeholder={'Add a title for your post.'}
+              value={title}
+              setValue={setTitle}
+            />
+            <LongTextInput
+              name={'Description'}
+              placeholder={'Describe what your post is about...'}
+              value={description}
+              setValue={setDescription}
+            />
+            {/* Multi-select for categories */}
+            <div className="mt-2">
+              <p className="mb-1 text-gray-500">Categories:</p>
+              <Select
+                placeholder={'Select a category...'}
+                className={'max-w-[500px] text-gray-900'}
+                // TODO: change theme to match brand (it is currently blue)
+                styles={{
+                  placeholder: (defaultStyles) => {
+                    return {
+                      ...defaultStyles,
+                      color: 'rgb(156, 163, 175)',
+                    }
+                  },
+                }}
+                isMulti={true}
+                //*: weird issue with typescript definitions from react-select. Works fine though.
+                //@ts-ignore
+                onChange={setCategories}
+                options={categoryOptions}
+                defaultValue={categories}
+              />
+            </div>
+
+            {/* // TODO: add react-select <Createable /> component for tags field */}
           </div>
           <div id="fileUploadBox" className="min-w-fit px-3 sm:px-10">
             {/* ERROR NOTIFICATIONS */}
@@ -98,6 +161,12 @@ const CreatePostForm = ({}) => {
                 {...{ uploadedImage, title, setUploadedImage }}
               />
             )}
+            <ShortTextInput
+              name={'Destination'}
+              placeholder={'Paste the link where your image comes from.'}
+              value={destinationURL}
+              setValue={setDestinationURL}
+            />
           </div>
         </div>
       </form>
@@ -113,5 +182,61 @@ const UploadErrorNotification = ({ children }: { children: ReactNode }) => {
       <MdOutlineErrorOutline className="h-6 w-6 text-red-500" />{' '}
       <span className="ml-2">{children}</span>
     </div>
+  )
+}
+
+type ShortTextProps = {
+  name: string
+  placeholder: string
+  value: string
+  setValue: Dispatch<SetStateAction<string>>
+}
+
+const ShortTextInput = ({
+  name,
+  placeholder,
+  value,
+  setValue,
+}: ShortTextProps) => {
+  return (
+    <label htmlFor={name} className="my-4 flex items-center text-gray-500">
+      <span className="mr-10">{name}:</span>
+      <input
+        className="flex-1 rounded-lg p-2 text-gray-900 shadow-sm"
+        id={name}
+        type={'text'}
+        {...{ placeholder, name, value }}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    </label>
+  )
+}
+
+const LongTextInput = ({
+  name,
+  placeholder,
+  value,
+  setValue,
+}: ShortTextProps) => {
+  const MAX_DESC_COUNT = 500
+  return (
+    <label htmlFor={name}>
+      <div className="mt-5 mb-2 flex items-center text-gray-500">
+        <span className="mr-auto">{name}:</span>
+        <span
+          className={`text-sm ${
+            value.length > MAX_DESC_COUNT ? 'text-red-500' : ''
+          }`}
+        >
+          {value.length} / {MAX_DESC_COUNT}
+        </span>
+      </div>
+      <textarea
+        className="max-h-[200px] w-full rounded-lg p-2 text-gray-900 shadow-sm"
+        id={name}
+        {...{ placeholder, name, value }}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    </label>
   )
 }

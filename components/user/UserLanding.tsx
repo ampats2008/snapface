@@ -5,7 +5,7 @@ import { IoCompassOutline } from 'react-icons/io5'
 import { User } from '../../types/User'
 
 type Props = {
-  user: User,
+  user: User
 }
 
 const LandingContent = ({ user }: Props) => {
@@ -21,7 +21,7 @@ const LandingContent = ({ user }: Props) => {
         <p className="mt-5 text-2xl">What would you like to do now?</p>
       </div>
 
-      <div id="userMenu" className="sm:grid  grid-cols-2">
+      <div id="userMenu" className="grid-cols-2  sm:grid">
         <UserLandingCard
           href={`/user/${user._id}`}
           icon={(className) => <BiUserCircle {...{ className }} />}
@@ -29,7 +29,7 @@ const LandingContent = ({ user }: Props) => {
           desc={'View or edit your the details of your profile.'}
         />
         <UserLandingCard
-          href={`/user/${user._id}/create`}
+          href={`/user/create`}
           icon={(className) => <MdPostAdd {...{ className }} />}
           title={'Create post'}
           desc={"Make your first post here if you haven't already."}
