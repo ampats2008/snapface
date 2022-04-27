@@ -6,14 +6,15 @@ import { Loading, Post } from './index'
 
 type Props = {
   filterBy?: string
+  tagFilter?: string
   userId?: string
 }
 
-const Feed: FC<Props> = ({ filterBy = 'all', userId }) => {
+const Feed: FC<Props> = ({ filterBy = 'all', tagFilter, userId }) => {
   // fetch posts to display (with a filter if provided)
   // filters could be:
   //     a category, liked posts by a given user, or created posts by a given user
-  const { posts, isLoading, isError } = usePosts(filterBy, userId)
+  const { posts, isLoading, isError } = usePosts(filterBy, userId, tagFilter)
 
   if (isLoading) return <Loading />
 

@@ -5,9 +5,11 @@ import {
   ReactNode,
   SetStateAction,
   useEffect,
+  useMemo,
   useState,
 } from 'react'
 import { MdOutlineErrorOutline } from 'react-icons/md'
+import { IoMdCheckmarkCircleOutline } from 'react-icons/io'
 import Select, { ActionMeta } from 'react-select'
 import CreateableSelect from 'react-select/creatable'
 import {
@@ -16,6 +18,7 @@ import {
   useSubmitPost,
 } from '../../hooks/useCreatePostHooks'
 import StyledButton from '../StyledButton'
+import Link from 'next/link'
 
 export type Tag = { label: string; value: string; __isNew__?: boolean }
 export type Category = { _id: string; label: string; value: string }
@@ -45,7 +48,7 @@ const CreatePostForm = ({ userId }: Props) => {
     console.log(tags)
   }, [tags])
 
-  const { submitPost, inputErrors } = useSubmitPost({
+  const { submitPost, inputErrors, formSubmitStatus } = useSubmitPost({
     userId,
     title,
     tags,
@@ -57,127 +60,198 @@ const CreatePostForm = ({ userId }: Props) => {
 
   return (
     <>
-      <form>
-        <div id="row1-Cont" className="justify-evenly sm:flex sm:flex-wrap">
-          <div id="titleDescDest-Cont" className="my-8 sm:min-w-[50ch]">
-            <ShortTextInput
-              name={'Title'}
-              placeholder={'Add a title for your post.'}
-              value={title}
-              setValue={setTitle}
-              type="text"
-            />
-            <LongTextInput
-              name={'Description'}
-              placeholder={'Describe what your post is about...'}
-              value={description}
-              setValue={setDescription}
-            />
-            {/* Multi-select for categories */}
-            <div className="mt-2">
-              <p className="mb-1 text-gray-500">Categories:</p>
-              <Select
-                placeholder={'Select a category...'}
-                className={'max-w-[500px] text-gray-900'}
-                // TODO: change theme to match brand (it is currently blue)
-                styles={{
-                  placeholder: (defaultStyles) => {
-                    return {
-                      ...defaultStyles,
-                      color: 'rgb(156, 163, 175)',
-                    }
-                  },
-                }}
-                isMulti={true}
-                //*: weird issue with typescript definitions from react-select. Works fine though.
-                //@ts-ignore
-                onChange={setCategories}
-                options={categoryOptions}
-                defaultValue={categories}
+      <div className="mx-auto sm:w-[85vw] xl:w-[80vw]">
+        <form>
+          <h1 className="mb-10 text-3xl font-bold">Make a New Post</h1>
+          {/* FORM SUBMIT ERROR / SUCCESS NOTIFICATION AREA */}
+          <FormNotifications {...{ inputErrors, formSubmitStatus }} />
+          <div
+            id="row1-Cont"
+            className="justify-center sm:flex-wrap xl:flex xl:justify-between"
+          >
+            <div id="titleDescDest-Cont" className="mt-8 mb-14 sm:min-w-[50ch]">
+              <ShortTextInput
+                name={'Title'}
+                placeholder={'Add a title for your post.'}
+                value={title}
+                setValue={setTitle}
+                type="text"
               />
+              <LongTextInput
+                name={'Description'}
+                placeholder={'Describe what your post is about...'}
+                value={description}
+                setValue={setDescription}
+              />
+              {/* Multi-select for categories */}
+              <div className="mt-2">
+                <p className="mb-1 text-gray-500">Categories:</p>
+                <Select
+                  placeholder={'Select a category...'}
+                  className={'text-gray-900 shadow-sm xl:max-w-[500px]'}
+                  // TODO: change theme to match brand (it is currently blue)
+                  styles={{
+                    placeholder: (defaultStyles) => {
+                      return {
+                        ...defaultStyles,
+                        color: 'rgb(156, 163, 175)',
+                      }
+                    },
+                  }}
+                  isMulti={true}
+                  //*: weird issue with typescript definitions from react-select. Works fine though.
+                  //@ts-ignore
+                  onChange={setCategories}
+                  options={categoryOptions}
+                  defaultValue={categories}
+                />
+              </div>
+              {/* Createable multi-select for tags */}
+              <div className="mt-2">
+                <p className="mb-1 text-gray-500">Tags:</p>
+                <CreateableSelect
+                  isMulti={true}
+                  placeholder={'Make a list of tags...'}
+                  className={'text-gray-900 shadow-sm xl:max-w-[500px]'}
+                  // TODO: change theme to match brand (it is currently blue)
+                  styles={{
+                    placeholder: (defaultStyles) => {
+                      return {
+                        ...defaultStyles,
+                        color: 'rgb(156, 163, 175)',
+                      }
+                    },
+                  }}
+                  //*: weird issue with typescript definitions from react-select. Works fine though.
+                  //@ts-ignore
+                  onChange={setTags}
+                />
+              </div>
             </div>
-            <div className="mt-2">
-              <p className="mb-1 text-gray-500">Tags:</p>
-              <CreateableSelect
-                isMulti={true}
-                placeholder={'Make a list of tags...'}
-                className={'max-w-[500px] text-gray-900'}
-                // TODO: change theme to match brand (it is currently blue)
-                styles={{
-                  placeholder: (defaultStyles) => {
-                    return {
-                      ...defaultStyles,
-                      color: 'rgb(156, 163, 175)',
-                    }
-                  },
-                }}
-                //*: weird issue with typescript definitions from react-select. Works fine though.
-                //@ts-ignore
-                onChange={setTags}
-              />
-            </div>
-
-            {/* // TODO: add react-select <Createable /> component for tags field */}
-          </div>
-          <div id="fileUploadBox" className="min-w-fit px-3 sm:px-10">
-            {/* ERROR NOTIFICATIONS */}
-            {uploadError === 'MAX_IMAGE_SIZE_EXCEEDED' && (
-              <UploadErrorNotification>
-                The file you uploaded was too big (&gt; {MAX_IMAGE_SIZE_MB}MB)!
-                Please try again.
-              </UploadErrorNotification>
-            )}
-            {uploadError === 'INVALID_FILE_TYPE' && (
-              <UploadErrorNotification>
-                The file you uploaded was not a supported file type (
-                {supportedFileTypes})! Please try again.
-              </UploadErrorNotification>
-            )}
-            {/* FILE UPLOAD FIELD */}
-            {!uploadedImage ? (
-              <FileUploadBox
-                uploadImage={uploadImage}
-                uploadType={'image'}
-                maxFileSize={'8MB'}
-                supportedFileTypes={supportedFileTypes}
-              />
-            ) : (
-              <UploadedImagePreview
-                {...{ uploadedImage, title, setUploadedImage }}
-              />
-            )}
-            <ShortTextInput
-              name={'Destination'}
-              placeholder={'Paste the link where your image comes from.'}
-              value={destinationURL}
-              setValue={setDestinationURL}
-              type="url"
-              pattern="https?://.+"
-            />
-
-            <StyledButton
-              roundingClass="rounded-full mx-auto mt-10"
-              onClick={submitPost}
-              disabled={false}
+            <div
+              id="fileUploadBox"
+              className="max-w-screen-lg flex-1 px-3 sm:px-10"
             >
-              Submit
-            </StyledButton>
+              {/* ERROR NOTIFICATIONS -- these occur onFileUpload, not onFormSubmit */}
+              {uploadError === 'MAX_IMAGE_SIZE_EXCEEDED' && (
+                <ErrorNotification>
+                  The file you uploaded was too big (&gt; {MAX_IMAGE_SIZE_MB}
+                  MB)! Please try again.
+                </ErrorNotification>
+              )}
+              {uploadError === 'INVALID_FILE_TYPE' && (
+                <ErrorNotification>
+                  The file you uploaded was not a supported file type (
+                  {supportedFileTypes})! Please try again.
+                </ErrorNotification>
+              )}
+              {/* FILE UPLOAD FIELD */}
+              {!uploadedImage ? (
+                <FileUploadBox
+                  uploadImage={uploadImage}
+                  uploadType={'image'}
+                  maxFileSize={'8MB'}
+                  supportedFileTypes={supportedFileTypes}
+                />
+              ) : (
+                <UploadedImagePreview
+                  {...{ uploadedImage, title, setUploadedImage }}
+                />
+              )}
+              <ShortTextInput
+                name={'Destination'}
+                placeholder={'Paste the link where your image comes from.'}
+                value={destinationURL}
+                setValue={setDestinationURL}
+                type="url"
+                pattern="https?://.+"
+              />
+              <StyledButton
+                roundingClass="rounded-full mx-auto mt-10"
+                onClick={submitPost}
+                disabled={false}
+              >
+                Submit
+              </StyledButton>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </>
   )
 }
 
 export default CreatePostForm
 
-const UploadErrorNotification = ({ children }: { children: ReactNode }) => {
+const ErrorNotification = ({ children }: { children: ReactNode }) => {
   return (
     <div id="errorNoti" className="my-8 flex rounded-2xl bg-red-200 p-5 ">
       <MdOutlineErrorOutline className="h-6 w-6 text-red-500" />{' '}
       <span className="ml-2">{children}</span>
     </div>
   )
+}
+
+const SuccessNotification = ({ children }: { children: ReactNode }) => {
+  return (
+    <div id="errorNoti" className="my-8 flex rounded-2xl bg-brand-200 p-5 ">
+      <IoMdCheckmarkCircleOutline className="h-6 w-6 text-brand-500" />{' '}
+      <span className="ml-2">{children}</span>
+    </div>
+  )
+}
+
+const FormNotifications = ({
+  inputErrors,
+  formSubmitStatus,
+}: {
+  inputErrors: {
+    title: string[]
+    tags: string[]
+    destinationURL: string[]
+    description: string[]
+    categories: string[]
+    uploadedImageId: string[]
+  }
+  formSubmitStatus: {
+    type: string
+    payload: any
+  }
+}) => {
+  const fieldValidationErrors = useMemo(() => {
+    return Object.entries(inputErrors)
+      .filter(([fieldName, fieldValue]) => fieldValue.length > 0)
+      .map(([fieldName, fieldValue], i) => (
+        <ErrorNotification key={`${fieldName}-${i}`}>
+          {fieldValue}
+        </ErrorNotification>
+      ))
+  }, [inputErrors])
+
+  if (fieldValidationErrors.length > 0) return <>{fieldValidationErrors}</>
+
+  if (formSubmitStatus.type === 'FAILED')
+    return (
+      <>
+        <ErrorNotification>
+          Sorry, something went wrong submitting your post. See the browser log
+          for more info.
+        </ErrorNotification>
+      </>
+    )
+
+  if (formSubmitStatus.type === 'SUCCESS')
+    return (
+      <>
+        <SuccessNotification>
+          Your post was created successfully. View it{' '}
+          <Link href={`/post/${formSubmitStatus?.payload?._id}`}>
+            <a className="text-brand-600 hover:underline">here.</a>
+          </Link>
+        </SuccessNotification>
+      </>
+    )
+  return null
 }
 
 type ShortTextProps = {

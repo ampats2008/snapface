@@ -136,6 +136,11 @@ export const useSubmitPost = ({
     console.log('errors:', inputErrors)
   }, [inputErrors])
 
+  const [formSubmitStatus, setFormSubmitStatus] = useState<{
+    type: string
+    payload: any
+  }>({ type: 'IDLE', payload: null })
+
   const submitPost: React.MouseEventHandler = () => {
     // runs onClick of form submit btn:
     setInputErrors({
@@ -156,43 +161,62 @@ export const useSubmitPost = ({
     })
 
     // 1. validate inputs
-    validateField('title', title, setInputErrors)
-    validateField('tags', tags, setInputErrors)
-    validateField('destinationURL', destinationURL, setInputErrors)
-    validateField('description', description, setInputErrors)
-    validateField('categories', categories, setInputErrors)
-    validateField('uploadedImageId', uploadedImageId, setInputErrors)
+    const isTitleError = validateField('title', title, setInputErrors) // prettier-ignore
+    const isTagError = validateField('tags', tags, setInputErrors) // prettier-ignore
+    const isURLError = validateField('destinationURL', destinationURL, setInputErrors) // prettier-ignore
+    const isDescError = validateField('description', description, setInputErrors) // prettier-ignore
+    const isCategoryError = validateField('categories', categories, setInputErrors) // prettier-ignore
+    const isImageError = validateField('uploadedImageId', uploadedImageId, setInputErrors) // prettier-ignore
 
-    // todo: if inputErrors is empty, proceed to posting the document
+    // prettier-ignore
+    const noInputErrors = !(isTitleError || isTagError || isURLError || isDescError || isCategoryError || isImageError)
 
-    // 2. format object as Sanity 'Post' document
-    const doc = {
-      _type: 'post',
-      categories: categories?.map((cat) => ({
-        _key: uuidv4(),
-        _ref: cat._id,
-        _type: 'reference',
-      })),
-      tags: tags?.map((tag) => tag.value),
-      description,
-      destination: destinationURL,
-      title,
-      image: {
-        _type: 'image',
-        asset: {
+    if (noInputErrors) {
+      // 2. format object as Sanity 'Post' document
+      const doc = {
+        _type: 'post',
+        categories: categories?.map((cat) => ({
+          _key: uuidv4(),
+          _ref: cat._id,
           _type: 'reference',
-          _ref: uploadedImageId,
+        })),
+        tags: tags?.map((tag) => tag.value.toLowerCase()),
+        description,
+        destination: destinationURL,
+        title,
+        image: {
+          _type: 'image',
+          asset: {
+            _type: 'reference',
+            _ref: uploadedImageId,
+          },
         },
-      },
-      postedBy: {
-        _ref: userId,
-        _type: 'postedBy',
-      },
+        postedBy: {
+          _ref: userId,
+          _type: 'postedBy',
+        },
+      }
+      // 3. create the document on the DB
+      client
+        .create(doc)
+        .then((newDoc) => {
+          console.log('success! heres the new document:', newDoc)
+          setFormSubmitStatus({ type: 'SUCCESS', payload: newDoc })
+        })
+        .catch((err) => {
+          console.log(
+            'Something went wrong submitting your post. More info:',
+            err.message
+          )
+          setFormSubmitStatus({ type: 'FAILED', payload: err.message })
+        })
     }
   }
 
-  return { submitPost, inputErrors }
+  return { formSubmitStatus, submitPost, inputErrors }
 }
+
+// HELPER FUNCTIONS
 
 const validateField = (
   fieldName: FieldNameKeys,
@@ -235,7 +259,7 @@ const validateField = (
         !fieldVal.match(validURL)
       ) {
         errors.push(
-          `Your destination URL is invalid (it must begin with 'http://' or 'https://').`
+          `Your destination URL is invalid (it must begin with "http://" or "https://").`
         )
       }
       break
@@ -265,16 +289,22 @@ const validateField = (
       break
   }
 
-  // if there are errors, assign the errors to the inputErrors object
-  // (so that they can be displayed to the user):
+  // if there are errors:
+  // (1) return true
+  // (2) assign the errors to the inputErrors object (so that they can be displayed to the user):
+  // else:
+  // (1) return false
   if (errors.length > 0) {
     setInputErrors((prev) => {
       return { ...prev, [fieldName]: errors }
     })
+    return true
+  } else {
+    return false
   }
 }
 
-//Type guard to check if array is a Category[] or Tag[]
+// Type guard to check if array is a Category[] or Tag[]
 const isCategoryArr = (array: Category[] | Tag[]): array is Category[] => {
   return (array as Category[])[0]._id !== undefined
 }

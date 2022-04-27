@@ -5,38 +5,53 @@ import { Post } from '../types/Post'
 
 export const usePosts: (
   filterBy: string,
-  userId?: string
+  userId?: string,
+  tagFilter?: string
 ) => {
   posts: Post[]
   isLoading: boolean
   isError: boolean
-} = (filterBy, userId) => {
+} = (filterBy, userId, tagFilter) => {
   //onMount: fetch 100 posts with react-query
 
   // calculate query based on filter
   const query = useMemo(() => {
-    if (filterBy === '')
-      return `*[_type == 'post'][0...100] | order(_createdAt desc)`
+    let buildingQuery = ''
 
-    if (filterBy === 'myPosts') {
-      console.log('fetching my posts')
-      return `*[_type == 'post' && postedBy._ref == '${userId}'][0...100] | order(_createdAt desc)`
+    // 1. Construct first part of query (with category filter)
+    if (filterBy === 'all') {
+      buildingQuery = `*[_type == 'post' `
+    } else if (filterBy === 'myPosts') {
+      buildingQuery = `*[_type == 'post' && postedBy._ref == '${userId}' `
     } else if (filterBy === 'myLikedPosts') {
-      console.log('fetching my liked posts')
-      return `*[_type == 'post' && '${userId}' in likes[].postedBy._ref][0...100] | order(_createdAt desc)`
+      buildingQuery = `*[_type == 'post' && '${userId}' in likes[].postedBy._ref `
     } else {
       // filterBy must be a category name in this case:
-      return `*[_type == 'post' && references(*[_type=="category" && name == '${filterBy}']._id)][0...100] | order(_createdAt desc)`
+      buildingQuery = `*[_type == 'post' && references(*[_type=="category" && name == '${filterBy}']._id) `
     }
-  }, [filterBy])
+
+    // 2. add a Tag filter if it exists
+    if (tagFilter) {
+      buildingQuery += `&& '${tagFilter}' in tags[] `
+    }
+
+    // 3. add the slice and sort pieces to end.
+    buildingQuery += `][0...100] | order(_createdAt desc)`
+
+    return buildingQuery
+  }, [filterBy, tagFilter])
 
   const {
     data: posts,
     isLoading,
     isError,
-  } = useQuery(['discover-posts', filterBy], () => client.fetch(query), {
-    refetchOnWindowFocus: false,
-  })
+  } = useQuery(
+    ['discover-posts', filterBy, tagFilter],
+    () => client.fetch(query),
+    {
+      refetchOnWindowFocus: false,
+    }
+  )
 
   return { posts, isLoading, isError }
 }
