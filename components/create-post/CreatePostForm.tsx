@@ -166,15 +166,15 @@ const CreatePostForm = ({ userId }: Props) => {
                 type="url"
                 pattern="https?://.+"
               />
-              <StyledButton
-                roundingClass="rounded-full mx-auto mt-10"
-                onClick={submitPost}
-                disabled={false}
-              >
-                Submit
-              </StyledButton>
             </div>
           </div>
+          <StyledButton
+            roundingClass="rounded-xl mx-auto mt-10 text-lg"
+            onClick={submitPost}
+            disabled={false}
+          >
+            Submit
+          </StyledButton>
         </form>
       </div>
     </>
