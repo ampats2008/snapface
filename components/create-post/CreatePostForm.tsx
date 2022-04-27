@@ -7,89 +7,53 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { client } from '../../sanity-scripts/client'
-import { SanityImageAssetDocument } from '@sanity/client'
 import { MdOutlineErrorOutline } from 'react-icons/md'
 import Select, { ActionMeta } from 'react-select'
+import CreateableSelect from 'react-select/creatable'
+import {
+  useImageUpload,
+  useInitialCategories,
+  useSubmitPost,
+} from '../../hooks/useCreatePostHooks'
+import StyledButton from '../StyledButton'
 
-type Props = {}
-const CreatePostForm = ({}: Props) => {
+export type Tag = { label: string; value: string; __isNew__?: boolean }
+export type Category = { _id: string; label: string; value: string }
+
+type Props = { userId: string }
+const CreatePostForm = ({ userId }: Props) => {
   // Use state to control form fields
   const [title, setTitle] = useState('')
-  const [tags, setTags] = useState<string[]>([])
+  const [tags, setTags] = useState<Tag[] | null>(null)
   const [destinationURL, setDestinationURL] = useState('')
   const [description, setDescription] = useState('')
 
-  // values/state/eventHandlers for categories multiselect field
-  const [categoryOptions, setCategoryOptions] = useState<any | null>(null)
+  const categoryOptions = useInitialCategories()
+  const [categories, setCategories] = useState<Category[] | null>(null)
 
-  // fetch categories for multi-select box on mount
-  useEffect(() => {
-    client
-      .fetch(`*[_type == 'category']{"label":name, "value":name}`)
-      .then((res) => {
-        setCategoryOptions(res)
-      })
-      .catch((err) =>
-        console.error('Error fetching category options from server!', err)
-      )
-  }, [])
-
-  const [categories, setCategories] = useState<any | null>(null)
+  const {
+    uploadImage,
+    uploadedImage,
+    setUploadedImage,
+    isUploadingImg,
+    uploadError,
+    supportedFileTypes,
+    MAX_IMAGE_SIZE_MB,
+  } = useImageUpload()
 
   useEffect(() => {
-    console.log(categories)
-  }, [categories])
+    console.log(tags)
+  }, [tags])
 
-  // values/state/eventHandlers for image upload process
-  const MAX_IMAGE_SIZE_MB = 8
-  const supportedFileTypes = 'PNG, JPG, SVG, GIF, and TIFF' // for error message and upload file box hint.
-  const [uploadedImage, setUploadedImage] =
-    useState<SanityImageAssetDocument | null>(null)
-  const [uploadError, setUploadError] = useState<
-    'MAX_IMAGE_SIZE_EXCEEDED' | 'INVALID_FILE_TYPE' | null
-  >(null)
-  const [isUploadingImg, setIsUploadingImg] = useState(false) // TODO: add a popup with loading bar to screen while image uploads
-
-  const uploadImage = (e: ChangeEvent<HTMLInputElement>) => {
-    // if the file from the input field is undefined or null, break out of the function
-    if (typeof e.target.files === 'undefined' || e.target.files === null) return
-    const file = e.target.files[0]
-    const { type, name, size } = file
-
-    // Set booleans for validation
-    const MAX_IMAGE_SIZE_EXCEEDED = size > MAX_IMAGE_SIZE_MB * 1000000
-    const INVALID_FILE_TYPE = ![
-      'image/png',
-      'image/jpeg',
-      'image/jpg',
-      'image/gif',
-      'image/svg+xml',
-      'image/tiff',
-    ].includes(type)
-
-    // Run validation checks
-    if (MAX_IMAGE_SIZE_EXCEEDED) setUploadError('MAX_IMAGE_SIZE_EXCEEDED')
-    if (INVALID_FILE_TYPE) setUploadError('INVALID_FILE_TYPE')
-
-    // *: if one of the checks failed, break before upload
-    if (MAX_IMAGE_SIZE_EXCEEDED || INVALID_FILE_TYPE) return
-
-    // Else: upload the image:
-    setIsUploadingImg(true)
-    console.log('correct file type')
-    client.assets
-      .upload('image', file, { contentType: type, filename: name })
-      .then((document) => {
-        setIsUploadingImg(false)
-        setUploadedImage(document)
-      })
-      .catch((err) => {
-        console.log('an error occurred during file upload:', err)
-      })
-  }
-
-  //TODO: organize the messy logic in this component
+  const { submitPost, inputErrors } = useSubmitPost({
+    userId,
+    title,
+    tags,
+    destinationURL,
+    description,
+    categories,
+    uploadedImageId: uploadedImage?._id,
+  })
 
   return (
     <>
@@ -101,6 +65,7 @@ const CreatePostForm = ({}: Props) => {
               placeholder={'Add a title for your post.'}
               value={title}
               setValue={setTitle}
+              type="text"
             />
             <LongTextInput
               name={'Description'}
@@ -129,6 +94,26 @@ const CreatePostForm = ({}: Props) => {
                 onChange={setCategories}
                 options={categoryOptions}
                 defaultValue={categories}
+              />
+            </div>
+            <div className="mt-2">
+              <p className="mb-1 text-gray-500">Tags:</p>
+              <CreateableSelect
+                isMulti={true}
+                placeholder={'Make a list of tags...'}
+                className={'max-w-[500px] text-gray-900'}
+                // TODO: change theme to match brand (it is currently blue)
+                styles={{
+                  placeholder: (defaultStyles) => {
+                    return {
+                      ...defaultStyles,
+                      color: 'rgb(156, 163, 175)',
+                    }
+                  },
+                }}
+                //*: weird issue with typescript definitions from react-select. Works fine though.
+                //@ts-ignore
+                onChange={setTags}
               />
             </div>
 
@@ -166,7 +151,17 @@ const CreatePostForm = ({}: Props) => {
               placeholder={'Paste the link where your image comes from.'}
               value={destinationURL}
               setValue={setDestinationURL}
+              type="url"
+              pattern="https?://.+"
             />
+
+            <StyledButton
+              roundingClass="rounded-full mx-auto mt-10"
+              onClick={submitPost}
+              disabled={false}
+            >
+              Submit
+            </StyledButton>
           </div>
         </div>
       </form>
@@ -190,6 +185,8 @@ type ShortTextProps = {
   placeholder: string
   value: string
   setValue: Dispatch<SetStateAction<string>>
+  type: string
+  pattern?: string
 }
 
 const ShortTextInput = ({
@@ -197,6 +194,8 @@ const ShortTextInput = ({
   placeholder,
   value,
   setValue,
+  type,
+  pattern,
 }: ShortTextProps) => {
   return (
     <label htmlFor={name} className="my-4 flex items-center text-gray-500">
@@ -204,8 +203,7 @@ const ShortTextInput = ({
       <input
         className="flex-1 rounded-lg p-2 text-gray-900 shadow-sm"
         id={name}
-        type={'text'}
-        {...{ placeholder, name, value }}
+        {...{ placeholder, name, value, type, pattern }}
         onChange={(e) => setValue(e.target.value)}
       />
     </label>
@@ -217,7 +215,7 @@ const LongTextInput = ({
   placeholder,
   value,
   setValue,
-}: ShortTextProps) => {
+}: Omit<ShortTextProps, 'type' | 'pattern'>) => {
   const MAX_DESC_COUNT = 500
   return (
     <label htmlFor={name}>
