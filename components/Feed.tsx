@@ -22,12 +22,16 @@ const Feed: FC<Props> = ({ filterBy = 'all', tagFilter, userId }) => {
 
   return (
     <div id="postsContainer" className="flex-wrap sm:flex">
-      {posts.map((post) => (
-        <Post
-          key={`${post.postedBy._ref}_${post.title}_${post._id}`}
-          {...{ post }}
-        />
-      ))}
+      {posts.length > 0 ? (
+        posts.map((post) => (
+          <Post
+            key={`${post.postedBy._ref}_${post.title}_${post._id}`}
+            {...{ post }}
+          />
+        ))
+      ) : (
+        <p className="mx-auto w-max">No posts found.</p>
+      )}
     </div>
   )
 }
