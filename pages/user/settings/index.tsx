@@ -15,8 +15,8 @@ const UserSettingsPage: NextPage = () => {
   } = useUser(session, status) // get the current user using the session.user.id
 
   useEffect(() => {
-    console.log(session)
-  }, [session])
+    console.log(currentUser)
+  }, [currentUser])
 
   if (status === 'loading' || isLoading) return <Loading />
 
@@ -24,7 +24,9 @@ const UserSettingsPage: NextPage = () => {
 
   return (
     <main className="py-10 px-4 xl:p-10">
-      <EditProfileForm {...{ userId: session?.user?.id }} />
+      <EditProfileForm
+        {...{ userId: session?.user?.id, initialUserInfo: currentUser }}
+      />
     </main>
   )
 }

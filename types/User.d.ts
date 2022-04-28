@@ -1,4 +1,6 @@
-export type User = {
+import { Asset } from './Post'
+
+export interface User {
   _createdAt: Date
   _id: string
   _rev: string
@@ -9,6 +11,9 @@ export type User = {
   lastName: string
   profileImg: string
   bio?: string
-  profileBanner?: string // might change this to sanity-image
+  bannerImg?: {
+    _type: 'image'
+    asset: Asset
+  }
   userName?: string
 }

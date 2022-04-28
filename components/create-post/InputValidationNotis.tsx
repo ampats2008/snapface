@@ -4,14 +4,7 @@ import { useMemo } from 'react'
 export const InputValidationNotifications = ({
   inputErrors,
 }: {
-  inputErrors: {
-    title: string[]
-    tags: string[]
-    destinationURL: string[]
-    description: string[]
-    categories: string[]
-    uploadedImageId: string[]
-  }
+  inputErrors: { [a: string]: string[] }
 }) => {
   const fieldValidationErrors = useMemo(() => {
     return Object.entries(inputErrors)

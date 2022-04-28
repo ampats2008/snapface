@@ -2,17 +2,14 @@ import Image from 'next/image'
 import { Dispatch, SetStateAction } from 'react'
 import { SanityImageAssetDocument } from '@sanity/client'
 import { MdCancel } from 'react-icons/md'
+import { Image as ImgType } from '../../types/Post'
 
 type Props = {
-  uploadedImage: SanityImageAssetDocument
+  uploadedImage: { url: SanityImageAssetDocument['url'] }
   title: string
-  setUploadedImage: Dispatch<SetStateAction<SanityImageAssetDocument | null>>
+  onCancel: () => void
 }
-const UploadedImagePreview = ({
-  uploadedImage,
-  title,
-  setUploadedImage,
-}: Props) => {
+const UploadedImagePreview = ({ uploadedImage, title, onCancel }: Props) => {
   return (
     <div className="relative my-5 h-[50vh]">
       <Image
@@ -29,7 +26,7 @@ const UploadedImagePreview = ({
         <button
           title="Cancel image upload"
           className="group appearance-none text-right"
-          onClick={() => setUploadedImage(null)}
+          onClick={onCancel}
         >
           <MdCancel className="h-8 w-8 fill-gray-400 group-hover:fill-red-400" />
         </button>

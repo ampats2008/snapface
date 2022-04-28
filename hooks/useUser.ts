@@ -22,7 +22,7 @@ export const useUser: (
   } = useQuery<User>(
     ['getUser', session, status],
     () => client.fetch(userQuery(session.user.id)),
-    { enabled: status === 'authenticated' }
+    { enabled: status === 'authenticated', refetchOnWindowFocus: false }
   )
 
   return { user, isLoading, isError, error }

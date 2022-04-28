@@ -22,19 +22,19 @@ export interface Category {
 }
 
 export interface Image {
-  _type: string
-  asset: PostedBy
+  _type: 'image'
+  asset: Asset
 }
 
 export interface PostedBy {
   _ref: string
-  _type: string
+  _type: 'postedBy'
 }
 
 export interface Like {
   postedBy: PostedBy
   _key: string
-  _type: string
+  _type: 'like'
 }
 
 export interface Comment {
@@ -43,7 +43,7 @@ export interface Comment {
   timeStamp: Date
   replies: Reply[]
   _key: string
-  _type: string
+  _type: 'comment'
 }
 
 export interface Reply {
@@ -51,5 +51,10 @@ export interface Reply {
   // Note: in the DB, the reply{}.comment does not have a '_key' prop (which is why I've used Omit here.);
   // however, when outputting the replies as Comment components, I added it back (see useCommentReplies)
   _key: string
-  _type: string
+  _type: 'reply'
+}
+
+export interface Asset {
+  _ref: string
+  _type: 'reference'
 }

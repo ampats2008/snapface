@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react'
 import Select from 'react-select'
 import CreateableSelect from 'react-select/creatable'
 import {
-  useImageUpload,
   useInitialCategories,
   useSubmitPost,
 } from '../../hooks/useCreatePostHooks'
+import { useImageUpload } from '../../hooks/useImageUpload'
 import StyledButton from '../StyledButton'
 import { ShortTextInput, LongTextInput } from './TextInputs'
 import { ErrorNotification, SuccessNotification } from './Notifications'
@@ -166,7 +166,11 @@ const CreatePostForm = ({ userId }: Props) => {
                 />
               ) : (
                 <UploadedImagePreview
-                  {...{ uploadedImage, title, setUploadedImage }}
+                  {...{
+                    uploadedImage,
+                    title,
+                    onCancel: () => setUploadedImage(null),
+                  }}
                 />
               )}
               <ShortTextInput

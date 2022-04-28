@@ -1,12 +1,12 @@
 import { UploadedImagePreview, FileUploadBox } from '..'
-import { useEffect, useState } from 'react'
-import Select from 'react-select'
-import CreateableSelect from 'react-select/creatable'
 import {
-  useImageUpload,
-  useInitialCategories,
-  useSubmitPost,
-} from '../../hooks/useCreatePostHooks'
+  ChangeEventHandler,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react'
+import { useImageUpload } from '../../hooks/useImageUpload'
 import StyledButton from '../StyledButton'
 import { ShortTextInput, LongTextInput } from '../create-post/TextInputs'
 import {
@@ -14,21 +14,28 @@ import {
   SuccessNotification,
 } from '../create-post/Notifications'
 import Link from 'next/link'
+import Image from 'next/image'
 import { InputValidationNotifications } from '../create-post/InputValidationNotis'
+import { useSubmitProfile } from '../../hooks/useSubmitProfile'
+import { User } from '../../types/User'
+import { buildUrlFor } from '../../sanity-scripts/client'
+import { SanityImageAssetDocument } from '@sanity/client'
 
 export type Tag = { label: string; value: string; __isNew__?: boolean }
 export type Category = { _id: string; label: string; value: string }
 
-type Props = { userId: string }
-const CreatePostForm = ({ userId }: Props) => {
+type Props = { userId: string; initialUserInfo: User | undefined }
+const EditProfileForm = ({ userId, initialUserInfo }: Props) => {
   // Use state to control form fields
-  const [title, setTitle] = useState('')
-  const [tags, setTags] = useState<Tag[] | null>(null)
-  const [destinationURL, setDestinationURL] = useState('')
-  const [description, setDescription] = useState('')
+  const [displayName, setDisplayName] = useState(
+    initialUserInfo?.userName ?? ''
+  )
+  const [firstName, setFirstName] = useState(initialUserInfo?.firstName ?? '')
+  const [lastName, setLastName] = useState(initialUserInfo?.lastName ?? '')
+  const [bio, setBio] = useState(initialUserInfo?.bio ?? '')
 
-  const categoryOptions = useInitialCategories()
-  const [categories, setCategories] = useState<Category[] | null>(null)
+  // this enables the preview for the user's banner image if it has already been set.
+  const [initialBanner, setInitialBanner] = useState(initialUserInfo?.bannerImg)
 
   const {
     uploadImage,
@@ -40,17 +47,12 @@ const CreatePostForm = ({ userId }: Props) => {
     MAX_IMAGE_SIZE_MB,
   } = useImageUpload()
 
-  useEffect(() => {
-    console.log(tags)
-  }, [tags])
-
-  const { submitPost, inputErrors, formSubmitStatus } = useSubmitPost({
+  const { submitPost, inputErrors, formSubmitStatus } = useSubmitProfile({
     userId,
-    title,
-    tags,
-    destinationURL,
-    description,
-    categories,
+    displayName,
+    firstName,
+    lastName,
+    bio,
     uploadedImageId: uploadedImage?._id,
   })
 
@@ -58,89 +60,58 @@ const CreatePostForm = ({ userId }: Props) => {
     <>
       <div className="mx-auto sm:w-[85vw] xl:w-[80vw]">
         <form>
-          <h1 className="mb-10 text-3xl font-bold">Make a New Post</h1>
+          <h1 className="mb-10 text-3xl font-bold">Edit your profile</h1>
           {/* FORM SUBMIT ERROR / SUCCESS NOTIFICATION AREA */}
           <InputValidationNotifications {...{ inputErrors }} />
 
           {formSubmitStatus.type === 'FAILED' && (
             <ErrorNotification>
-              Sorry, something went wrong submitting your post. See the browser
+              Sorry, something went wrong updating your profile. See the browser
               log for more info.
             </ErrorNotification>
           )}
 
           {formSubmitStatus.type === 'SUCCESS' && (
             <SuccessNotification>
-              Your post was created successfully. View it{' '}
-              <Link href={`/post/${formSubmitStatus?.payload?._id}`}>
+              Your profile was updated successfully. View it{' '}
+              <Link href={`/user/${formSubmitStatus?.payload?._id}`}>
                 <a className="text-brand-600 hover:underline">here.</a>
               </Link>
             </SuccessNotification>
           )}
 
-          <div
-            id="row1-Cont"
-            className="justify-center sm:flex-wrap xl:flex xl:justify-between"
-          >
+          <div id="row1-Cont" className="justify-center sm:flex-wrap xl:flex">
             <div id="titleDescDest-Cont" className="mt-8 mb-14 sm:min-w-[50ch]">
               <ShortTextInput
-                name={'Title'}
-                placeholder={'Add a title for your post.'}
-                value={title}
-                setValue={setTitle}
+                name={'Display name'}
+                placeholder={'Pick a nickname for other users to see.'}
+                value={displayName}
+                setValue={setDisplayName}
+                type="text"
+              />
+              <ShortTextInput
+                name={'First name'}
+                placeholder={'What is your given name?'}
+                value={firstName}
+                setValue={setFirstName}
+                type="text"
+              />
+              <ShortTextInput
+                name={'Last name'}
+                placeholder={'What is your family name?'}
+                value={lastName}
+                setValue={setLastName}
                 type="text"
               />
               <LongTextInput
-                name={'Description'}
-                placeholder={'Describe what your post is about...'}
-                value={description}
-                setValue={setDescription}
+                name={'Bio'}
+                placeholder={
+                  'Give everyone a brief introduction about yourself...'
+                }
+                value={bio}
+                setValue={setBio}
                 maxCharCount={500}
               />
-              {/* Multi-select for categories */}
-              <div className="mt-2">
-                <p className="mb-1 text-gray-500">Categories:</p>
-                <Select
-                  placeholder={'Select a category...'}
-                  className={'text-gray-900 shadow-sm xl:max-w-[500px]'}
-                  // TODO: change theme to match brand (it is currently blue)
-                  styles={{
-                    placeholder: (defaultStyles) => {
-                      return {
-                        ...defaultStyles,
-                        color: 'rgb(156, 163, 175)',
-                      }
-                    },
-                  }}
-                  isMulti={true}
-                  //*: weird issue with typescript definitions from react-select. Works fine though.
-                  //@ts-ignore
-                  onChange={setCategories}
-                  options={categoryOptions}
-                  defaultValue={categories}
-                />
-              </div>
-              {/* Createable multi-select for tags */}
-              <div className="mt-2">
-                <p className="mb-1 text-gray-500">Tags:</p>
-                <CreateableSelect
-                  isMulti={true}
-                  placeholder={'Make a list of tags...'}
-                  className={'text-gray-900 shadow-sm xl:max-w-[500px]'}
-                  // TODO: change theme to match brand (it is currently blue)
-                  styles={{
-                    placeholder: (defaultStyles) => {
-                      return {
-                        ...defaultStyles,
-                        color: 'rgb(156, 163, 175)',
-                      }
-                    },
-                  }}
-                  //*: weird issue with typescript definitions from react-select. Works fine though.
-                  //@ts-ignore
-                  onChange={setTags}
-                />
-              </div>
             </div>
             <div
               id="fileUploadBox"
@@ -160,26 +131,36 @@ const CreatePostForm = ({ userId }: Props) => {
                 </ErrorNotification>
               )}
               {/* FILE UPLOAD FIELD */}
-              {!uploadedImage ? (
-                <FileUploadBox
-                  uploadImage={uploadImage}
-                  uploadType={'image'}
-                  maxFileSize={'8MB'}
-                  supportedFileTypes={supportedFileTypes}
+              <h2
+                className="mt-2 mb-4 text-gray-500"
+                title="Personalize your profile with a background image."
+              >
+                Profile banner image:
+              </h2>
+
+              {initialBanner ? (
+                <UploadedImagePreview
+                  {...{
+                    uploadedImage: {
+                      url: buildUrlFor(initialBanner)
+                        .height(400)
+                        .width(700)
+                        .url(),
+                    },
+                    title: 'Profile banner',
+                    onCancel: () => setInitialBanner(undefined),
+                  }}
                 />
               ) : (
-                <UploadedImagePreview
-                  {...{ uploadedImage, title, setUploadedImage }}
+                <NoBannerYet
+                  {...{
+                    uploadedImage,
+                    uploadImage,
+                    setUploadedImage,
+                    supportedFileTypes,
+                  }}
                 />
               )}
-              <ShortTextInput
-                name={'Destination'}
-                placeholder={'Paste the link where your image comes from.'}
-                value={destinationURL}
-                setValue={setDestinationURL}
-                type="url"
-                pattern="https?://.+"
-              />
             </div>
           </div>
           <StyledButton
@@ -195,4 +176,37 @@ const CreatePostForm = ({ userId }: Props) => {
   )
 }
 
-export default CreatePostForm
+export default EditProfileForm
+
+const NoBannerYet = ({
+  uploadedImage,
+  uploadImage,
+  setUploadedImage,
+  supportedFileTypes,
+}: {
+  uploadedImage: SanityImageAssetDocument | null
+  uploadImage: ChangeEventHandler
+  setUploadedImage: Dispatch<SetStateAction<SanityImageAssetDocument | null>>
+  supportedFileTypes: string
+}) => {
+  return (
+    <>
+      {!uploadedImage ? (
+        <FileUploadBox
+          uploadImage={uploadImage}
+          uploadType={'new image'}
+          maxFileSize={'8MB'}
+          supportedFileTypes={supportedFileTypes}
+        />
+      ) : (
+        <UploadedImagePreview
+          {...{
+            uploadedImage,
+            title: 'Profile banner',
+            onCancel: () => setUploadedImage(null),
+          }}
+        />
+      )}
+    </>
+  )
+}
