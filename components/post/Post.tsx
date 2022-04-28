@@ -52,10 +52,12 @@ const Post = ({ post }: Props) => {
             postID={post._id}
           />
         )}
-        <DestinationLink
-          posClass={'absolute bottom-2 left-2'}
-          destinationURL={post.destination}
-        />
+        {post.destination && (
+          <DestinationLink
+            posClass={'absolute bottom-2 left-2'}
+            destinationURL={post.destination}
+          />
+        )}
       </div>
     </div>
   )

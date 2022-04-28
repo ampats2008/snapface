@@ -60,10 +60,12 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
             title={`${post.title}`}
             priority
           />
-          <DestinationLink
-            destinationURL={post.destination}
-            posClass={'absolute bottom-3 left-3'}
-          />
+          {post.destination && (
+            <DestinationLink
+              destinationURL={post.destination}
+              posClass={'absolute bottom-3 left-3'}
+            />
+          )}
           <LikeBtn
             likes={post.likes}
             userID={status === 'authenticated' ? session?.user?.id : null}
