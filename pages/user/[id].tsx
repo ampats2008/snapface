@@ -1,14 +1,6 @@
-import Error from 'next/error'
 import type { NextPage, NextPageContext } from 'next'
-import { useUser } from '../../hooks/useUser'
-import {
-  Feed,
-  Loading,
-  ProfileBanner,
-  ProfilePostsFilter,
-} from '../../components'
-import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { Feed, ProfileBanner, ProfilePostsFilter } from '../../components'
+import { useState } from 'react'
 import { client } from '../../sanity-scripts/client'
 import { User } from '../../types/User'
 
@@ -17,31 +9,8 @@ import { User } from '../../types/User'
 const UserProfile: NextPage<{ initialData: User }> = ({
   initialData: pageUser,
 }) => {
-  const { data: session, status } = useSession()
-  const {
-    user: currentUser,
-    isLoading,
-    isError,
-    error,
-  } = useUser(session, status) // get the current user using the session.user.id
-
-  useEffect(() => {
-    console.log(session)
-  }, [session])
-  // TODO: EDIT PROFILE DETAILS:
-  // TODO: if the user from useUser matches the user from pageUser, then:
-  // TODO: the user is currently logged in and viewing their own profile page.
-  // TODO: this means that we should enable the user to edit their profile details and POST them to Sanity.
-
-  // TODO: CREATE NEW POST:
-  // TODO: allow the user to create a new post and POST it to Sanity
-
   // Call for posts based on filter value
   const [filter, setFilter] = useState('myPosts')
-
-  if (status === 'loading' || isLoading) return <Loading />
-
-  if (isError) return <Error statusCode={401} />
 
   return (
     <main className="mt-4 xl:mt-0">

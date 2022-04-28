@@ -1,4 +1,4 @@
-import { UploadedImagePreview, FileUploadBox } from '../../components'
+import { UploadedImagePreview, FileUploadBox } from '..'
 import { useEffect, useState } from 'react'
 import Select from 'react-select'
 import CreateableSelect from 'react-select/creatable'
@@ -8,10 +8,13 @@ import {
   useSubmitPost,
 } from '../../hooks/useCreatePostHooks'
 import StyledButton from '../StyledButton'
-import { ShortTextInput, LongTextInput } from './TextInputs'
-import { ErrorNotification, SuccessNotification } from './Notifications'
+import { ShortTextInput, LongTextInput } from '../create-post/TextInputs'
+import {
+  ErrorNotification,
+  SuccessNotification,
+} from '../create-post/Notifications'
 import Link from 'next/link'
-import { InputValidationNotifications } from './InputValidationNotis'
+import { InputValidationNotifications } from '../create-post/InputValidationNotis'
 
 export type Tag = { label: string; value: string; __isNew__?: boolean }
 export type Category = { _id: string; label: string; value: string }

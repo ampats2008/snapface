@@ -15,6 +15,7 @@ import { useSession, signIn, signOut } from 'next-auth/react'
 import { Session } from '../../types/Session'
 import { ProfilePicture } from '..'
 import MenuItem from '../comment/MenuItem'
+import { GoGear } from 'react-icons/go'
 
 type LayoutProps = {
   children: React.ReactNode
@@ -43,7 +44,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </Head>
       <header
         className={
-          'flex flex-wrap justify-center drop-shadow-sm xl:justify-between'
+          // relative z-10 places header on top of the body in the stacking order
+          // (allows our drop down for ProfileMenu to lay ontop of any body content)
+          'relative z-10 flex flex-wrap justify-center drop-shadow-sm xl:justify-between'
         }
       >
         <div id="logoCont">
@@ -70,12 +73,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </a>
             </Link>
           )}
-
-          {/* 
-              //TODO: Refactor this part of navbar:
-              //TODO: 1. Add Create Post button if authenticated
-              //TODO: 2. Merge my Profile and Log out into a Profile dropdown menu
-          */}
 
           {status === 'authenticated' && (
             <ProfileMenu {...{ session, status }} />
@@ -113,7 +110,7 @@ const ProfileMenu = ({ session, status }: Props) => {
       {menuOpened && (
         <div
           id="dropdown"
-          className="absolute top-12 right-0 w-max rounded-lg bg-gray-100 p-1 shadow-sm"
+          className="absolute top-12 right-0 z-10 w-max rounded-lg bg-gray-100 p-1 shadow-sm"
         >
           <MenuItem
             onClick={() => {
@@ -134,6 +131,16 @@ const ProfileMenu = ({ session, status }: Props) => {
           >
             Create Post{' '}
             <MdOutlinePostAdd className="ml-2 inline-block h-5 w-5 text-brand-500" />
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              router.push(`/user/settings/`)
+              setMenuOpened(false)
+            }}
+            className={'justify-end hover:bg-gray-200'}
+          >
+            Settings{' '}
+            <GoGear className="ml-2 inline-block h-5 w-5 text-gray-500" />
           </MenuItem>
           <MenuItem
             onClick={() => {

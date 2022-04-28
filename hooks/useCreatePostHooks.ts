@@ -47,7 +47,8 @@ export const useImageUpload = () => {
   const [uploadError, setUploadError] = useState<
     'MAX_IMAGE_SIZE_EXCEEDED' | 'INVALID_FILE_TYPE' | null
   >(null)
-  const [isUploadingImg, setIsUploadingImg] = useState(false) // TODO: add a popup with loading bar to screen while image uploads
+  const [isUploadingImg, setIsUploadingImg] = useState(false)
+  // TODO: add a popup with loading bar to screen while image uploads
 
   const uploadImage = (e: ChangeEvent<HTMLInputElement>) => {
     // if the file from the input field is undefined or null, break out of the function
