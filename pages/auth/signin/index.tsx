@@ -24,7 +24,10 @@ type Props = {
 }
 
 const Login: NextPage<Props> = ({ providers }) => {
-  const { error } = useRouter().query // Next-auth passes login errors as query string params: https://next-auth.js.org/configuration/pages#sign-in-page
+  const {
+    error,
+    callbackUrl,
+  }: { error?: string | string[]; callbackUrl?: string } = useRouter().query // Next-auth passes login errors as query string params: https://next-auth.js.org/configuration/pages#sign-in-page
   // Compute error message based on 'error'
   const errorMsgMap: { [error: string]: string } = {
     Default: 'Sorry, something went wrong. Please try to sign in again.',
@@ -60,7 +63,9 @@ const Login: NextPage<Props> = ({ providers }) => {
       {Object.values(providers).map((provider) => (
         <StyledButton
           key={provider.name}
-          onClick={() => signIn(provider.id, { callbackUrl: '/' })}
+          onClick={() =>
+            signIn(provider.id, { callbackUrl: callbackUrl ?? '/' })
+          }
           disabled={false}
           roundingClass="rounded-full mb-8"
         >

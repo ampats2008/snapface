@@ -20,8 +20,7 @@ type LayoutProps = {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter()
-  const { data: session, status }: { data: Session; status: string } =
-    useSession()
+  const { data: session, status } = useSession()
 
   return (
     <>

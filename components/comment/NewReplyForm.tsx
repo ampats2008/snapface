@@ -16,8 +16,7 @@ const NewReplyForm = ({
   commentKey: Comment['_key']
 }) => {
   // get session info for replyHead
-  const { data: session, status }: { data: Session; status: string } =
-    useSession()
+  const { data: session, status } = useSession()
 
   const displayName = useDisplayName({
     user: session.user,
