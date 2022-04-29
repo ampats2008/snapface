@@ -26,7 +26,6 @@ const PostComment = ({
   replyParentKey = null,
 }: Props) => {
   // Get the user that this comment was postedBy:
-  // !: this hook could be eliminated by including the '->' operator in the GROQ query for the Post
   const {
     postedByUser,
     isLoading: userLoading,
