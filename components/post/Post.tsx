@@ -13,8 +13,7 @@ type Props = {
 const Post = ({ post }: Props) => {
   const router = useRouter()
 
-  const { data: session, status }: { data: Session; status: string } =
-    useSession()
+  const { data: session, status } = useSession()
 
   const goToPostDetailPage = () => {
     router.push(`/post/${post._id}`)

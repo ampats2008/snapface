@@ -3,7 +3,6 @@ import { usePostedBy } from '../../hooks/usePostedBy'
 import { useDisplayName } from '../../hooks/useDisplayName'
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
-import { Session } from '../../types/Session'
 import {
   ContextMenu,
   DateTimePosted,
@@ -13,7 +12,6 @@ import {
   ProfilePicture,
 } from '../'
 import RepliesSection from './RepliesSection'
-import { User } from '../../types/User'
 import { useCommentActions } from '../../hooks/useCommentActions'
 
 type Props = {
@@ -49,13 +47,7 @@ const PostComment = ({
   // 1. if unauthenticated, don't show context menu
   // 2. if authenticated, enable replies to all comments.
   // 3. if authenticated & the session id matches the comment's user id: enable delete / edit buttons.
-  const {
-    data: session,
-    status,
-  }: {
-    data: Session
-    status: 'authenticated' | 'unauthenticated' | 'loading'
-  } = useSession()
+  const { data: session, status } = useSession()
 
   // Logic for Comment CRUD Actions: in 'useCommentActions' and 'useCommentOrReplyForm' hooks
   const [replyFormOpened, setReplyFormOpened] = useState(false)

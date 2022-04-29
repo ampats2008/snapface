@@ -14,6 +14,7 @@ const UserMenu: NextPage = () => {
   useEffect(() => {
     // scroll to top on mount
     window.scrollTo(0, 0)
+    console.log(session)
   }, [])
 
   if (status === 'loading' || isLoading) return <Loading />

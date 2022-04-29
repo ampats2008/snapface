@@ -31,13 +31,7 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
 
   // Session status will determine whether or not the 'logged-in'
   // functionality will be added to this page's components or not
-  const {
-    data: session,
-    status,
-  }: {
-    data: Session
-    status: 'authenticated' | 'unauthenticated' | 'loading'
-  } = useSession()
+  const { data: session, status } = useSession()
 
   if (isLoading) return <Loading />
 
