@@ -9,7 +9,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'brand': {
+        brand: {
           50: '#f2faf7',
           100: '#e6f5ef',
           200: '#bfe7d7',
@@ -23,11 +23,17 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: [
-          "Inter",
-          ...defaultTheme.fontFamily.sans,
-        ],
-      }
+        sans: ['Inter', ...defaultTheme.fontFamily.sans],
+      },
+      animation: {
+        fadeIn: 'fadeIn ease-in-out forwards 500ms',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+      },
     },
   },
   plugins: [],
