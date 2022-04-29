@@ -104,7 +104,7 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
         {status === 'unauthenticated' && (
           <p>
             Please{' '}
-            <Link href={'/login'}>
+            <Link href={'/auth/signin'}>
               <a className="text-brand-600 hover:underline">sign in</a>
             </Link>{' '}
             to post a comment.

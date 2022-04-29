@@ -8,21 +8,9 @@ import { useSession } from 'next-auth/react'
 // Private version of profile page: requires user to be signed in:
 // the public user profile page will be a SSR page that doesn't interface with useUser / useSession
 const CreatePostPage: NextPage = () => {
-  const { data: session, status } = useSession()
-  const {
-    user: currentUser,
-    isLoading,
-    isError,
-    error,
-  } = useUser(session, status) // get the current user using the session.user.id
+  const { data: session, status } = useSession({ required: true })
 
-  useEffect(() => {
-    console.log(session)
-  }, [session])
-
-  if (status === 'loading' || isLoading) return <Loading />
-
-  if (status === 'unauthenticated' || isError) return <Error statusCode={401} />
+  if (status === 'loading') return <Loading />
 
   return (
     <main className="py-10 px-4 xl:p-10">

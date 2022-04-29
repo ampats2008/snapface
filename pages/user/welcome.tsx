@@ -8,26 +8,21 @@ import { useUser } from '../../hooks/useUser'
 
 const UserMenu: NextPage = () => {
   const router = useRouter()
-  const {data: session, status} = useSession()
+  const { data: session, status } = useSession({ required: true })
   const { user, isLoading, isError, error } = useUser(session, status) // get the current user using the session.user.id
-  
+
   useEffect(() => {
     // scroll to top on mount
     window.scrollTo(0, 0)
   }, [])
 
-  useEffect(() => {
-    // console.log('login status:', status);
-    if (status === 'unauthenticated') router.push('/')
-  }, [status])  
-  
   if (status === 'loading' || isLoading) return <Loading />
 
   if (isError) return <Error statusCode={401} />
 
   return (
     <main className="grid grid-rows-[25vh_1fr] place-items-center">
-      {(user) && <UserLanding {...{user}} />}
+      {user && <UserLanding {...{ user }} />}
     </main>
   )
 }

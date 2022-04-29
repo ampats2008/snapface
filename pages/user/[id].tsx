@@ -17,7 +17,7 @@ const UserProfile: NextPage<{ initialData: User }> = ({
       {pageUser && <ProfileBanner {...{ user: pageUser }} />}
       {/* Posts feed with controls for filtering by *liked* and *postedBy* current user */}
       <ProfilePostsFilter {...{ setFilter, filter }} />
-      <section className="mb-10">
+      <section className="mb-10 xl:mx-auto xl:w-[80vw]">
         <Feed filterBy={filter} userId={pageUser._id} />
       </section>
     </main>

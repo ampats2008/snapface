@@ -1,14 +1,13 @@
 import NextAuth, { DefaultSession } from 'next-auth'
 import GoogleProvider, { GoogleProfile } from 'next-auth/providers/google'
 // import FacebookProvider from "next-auth/providers/facebook"
-// import GithubProvider from "next-auth/providers/github"
-// import TwitterProvider from "next-auth/providers/twitter"
+// import GithubProvider from 'next-auth/providers/github'
+// import TwitterProvider from 'next-auth/providers/twitter'
 // import Auth0Provider from "next-auth/providers/auth0"
 // import AppleProvider from "next-auth/providers/apple"
 // import EmailProvider from "next-auth/providers/email"
 import SanityAdapter from '../../../sanity-scripts/adapter/adapter'
 import { client } from '../../../sanity-scripts/client'
-import user from '../../../../studio/schemas/user'
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -74,6 +73,9 @@ export default NextAuth({
   theme: {
     colorScheme: 'auto',
   },
+  pages: {
+    signIn: '/auth/signin',
+  },
   callbacks: {
     async jwt({ token, user }) {
       token.userRole = 'admin'
@@ -90,7 +92,7 @@ export default NextAuth({
         }
       return token
     },
-    async session({ session, token }) {      
+    async session({ session, token }) {
       // define the piece(s) of the token that are exposed to the front-end
       // when useSession() or getSession() are called
       session.user = token.user

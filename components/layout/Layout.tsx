@@ -8,10 +8,7 @@ import { BiRightArrowAlt } from 'react-icons/bi'
 import { FaUserCircle } from 'react-icons/fa'
 import { IoExitOutline } from 'react-icons/io5'
 import { MdOutlinePostAdd } from 'react-icons/md'
-import { useUser } from '../../hooks/useUser'
-
-import StyledButton from '../StyledButton'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import { Session } from '../../types/Session'
 import { ProfilePicture } from '..'
 import MenuItem from '../comment/MenuItem'
@@ -65,8 +62,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <NavLink name="Home" link="/" />
           <NavLink name="Discover" link="/discover" />
           {/* Don't show Sign-in button if user isLoggedIn or if user is on login page  */}
-          {router.pathname !== '/login' && !session && (
-            <Link href={'/login'}>
+          {router.pathname !== '/auth/signin' && !session && (
+            <Link href={'/auth/signin'}>
               <a className="btn-primary flex items-center rounded-full">
                 Sign in{' '}
                 <BiRightArrowAlt className="ml-1 inline-block h-5 w-5" />

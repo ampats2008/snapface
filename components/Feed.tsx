@@ -21,7 +21,7 @@ const Feed: FC<Props> = ({ filterBy = 'all', tagFilter, userId }) => {
   if (isError) return <Error statusCode={401} /> // replace this with my own error component
 
   return (
-    <div id="postsContainer" className="flex-wrap sm:flex">
+    <div id="postsContainer" className="flex-wrap justify-center sm:flex">
       {posts.length > 0 ? (
         posts.map((post) => (
           <Post
