@@ -1,28 +1,26 @@
 import type { NextPage } from 'next'
 import { useSession } from 'next-auth/react'
-import Router, { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import { Loading, LoggedOutLanding } from '../components'
-import { useUser } from '../hooks/useUser'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { LoggedOutLanding } from '../components'
 
 const Home: NextPage = () => {
-
-  const {data: session, status} = useSession()
+  const { data: session, status } = useSession()
 
   const router = useRouter()
 
   useEffect(() => {
     // scroll to top on mount
-    window.scrollTo(0,0)
+    window.scrollTo(0, 0)
   }, [])
 
   useEffect(() => {
-    console.log('login status:', status);
-    if (status === 'authenticated') router.push('/user/welcome')
+    console.log('login status:', status)
+    if (status === 'authenticated') router.push('/discover')
   }, [status])
 
   return (
-    <main className="grid place-content-center min-h-[50vh]">
+    <main className="grid min-h-[50vh] place-content-center">
       {/* display only if not logged in: */}
       <LoggedOutLanding />
     </main>
@@ -30,4 +28,3 @@ const Home: NextPage = () => {
 }
 
 export default Home
-

@@ -1,25 +1,27 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { Session } from '../../types/Session'
+import { Session } from 'next-auth/core/types'
 import { User } from '../../types/User'
 
 const ProfilePicture = ({
-  userLoading,
   user,
   displayName,
   customClickHandler,
 }: {
-  userLoading: boolean
   user: User | Session['user']
   displayName: string | undefined
   customClickHandler?: React.MouseEventHandler
 }) => {
+  // type guard to differentiate b/w User / Session prop
+  function isUser(obj: User | Session['user']): obj is User {
+    return (obj as User)._id !== undefined
+  }
+
   const router = useRouter()
 
   const defaultOnClick = () => {
-    // redirect to user's profile by default
-    router.push(`/user/${user.hasOwnProperty('_id') ? user._id : user.id}`)
+    // redirect to user's profile by default -- will use customClickHandler if provided
+    router.push(`/user/${isUser(user) ? user._id : user.id}`)
   }
 
   return (

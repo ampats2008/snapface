@@ -1,12 +1,11 @@
 import { MdCancel } from 'react-icons/md'
-import { Dispatch, SetStateAction, useState } from 'react'
-import { User } from '../../types/User'
+import { Dispatch, SetStateAction } from 'react'
 import { Comment } from '../../types/Post'
 import { useSession } from 'next-auth/react'
 import { useDisplayName } from '../../hooks/useDisplayName'
-import { Session } from '../../types/Session'
 import { DateTimePosted, DisplayName, ProfilePicture, StyledButton } from '..'
 import { useCommentOrReplyForm } from '../../hooks/useCommentOrReplyForm'
+import { useUser } from '../../hooks/useUser'
 
 const NewReplyForm = ({
   setReplyFormOpened,
@@ -16,12 +15,13 @@ const NewReplyForm = ({
   commentKey: Comment['_key']
 }) => {
   // get session info for replyHead
-  const { data: session, status } = useSession()
+  const { data: session, status } = useSession({ required: true })
+  const { user, isLoading, isError } = useUser(session, status) // get the current user using the session.user.id
 
   const displayName = useDisplayName({
-    user: session.user,
-    userLoading: status === 'loading',
-    userError: false,
+    user: user,
+    userLoading: isLoading,
+    userError: isError,
   })
 
   // *Data needed for reply submission:
@@ -51,14 +51,13 @@ const NewReplyForm = ({
           <>
             <ProfilePicture
               {...{
-                userLoading: status === 'loading',
                 user: session.user,
                 displayName,
               }}
             />
             <DisplayName
               {...{
-                userLoading: status === 'loading',
+                userLoading: false,
                 user: session.user,
                 displayName,
               }}

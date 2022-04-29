@@ -4,7 +4,6 @@ import { useRouter } from 'next/router'
 import { Post } from '../../types/Post'
 import { DestinationLink, LikeBtn } from '..'
 import { useSession } from 'next-auth/react'
-import { Session } from '../../types/Session'
 
 type Props = {
   post: Post

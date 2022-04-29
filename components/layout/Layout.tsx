@@ -9,10 +9,10 @@ import { FaUserCircle } from 'react-icons/fa'
 import { IoExitOutline } from 'react-icons/io5'
 import { MdOutlinePostAdd } from 'react-icons/md'
 import { useSession, signOut } from 'next-auth/react'
-import { Session } from '../../types/Session'
 import { ProfilePicture } from '..'
 import MenuItem from '../comment/MenuItem'
 import { GoGear } from 'react-icons/go'
+import { Session } from 'next-auth/core/types'
 
 type LayoutProps = {
   children: React.ReactNode
@@ -98,7 +98,6 @@ const ProfileMenu = ({ session, status }: Props) => {
   return (
     <div className="relative flex items-center">
       <ProfilePicture
-        userLoading={status === 'loading'}
         user={session.user}
         displayName={`${session.user.firstName} ${session.user.lastName}`}
         customClickHandler={() => setMenuOpened((prev) => !prev)}

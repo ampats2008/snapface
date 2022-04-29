@@ -1,15 +1,13 @@
 import type { NextPage } from 'next'
 import { useSession } from 'next-auth/react'
 import Error from 'next/error'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Loading, UserLanding } from '../../components'
 import { useUser } from '../../hooks/useUser'
 
 const UserMenu: NextPage = () => {
-  const router = useRouter()
   const { data: session, status } = useSession({ required: true })
-  const { user, isLoading, isError, error } = useUser(session, status) // get the current user using the session.user.id
+  const { user, isLoading, isError } = useUser(session, status) // get the current user using the session.user.id
 
   useEffect(() => {
     // scroll to top on mount

@@ -16,7 +16,6 @@ import Image from 'next/image'
 import { buildUrlFor } from '../../sanity-scripts/client'
 import { client } from '../../sanity-scripts/client' // for prefetching data from server
 import { useSession } from 'next-auth/react'
-import { Session } from '../../types/Session'
 import Link from 'next/link'
 
 type Props = {

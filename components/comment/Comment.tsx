@@ -64,7 +64,6 @@ const PostComment = ({
         <div id="commentHead" className="flex items-center">
           <ProfilePicture
             {...{
-              userLoading,
               user: postedByUser,
               displayName,
             }}
