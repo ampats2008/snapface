@@ -61,7 +61,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <NavLink name="Home" link="/" />
           <NavLink name="Discover" link="/discover" />
           {/* Don't show Sign-in button if user isLoggedIn or if user is on login page  */}
-          {router.pathname !== '/auth/signin' && !session && (
+          {router.pathname !== '/auth/signin' && status === 'unauthenticated' && (
             <Link href={'/auth/signin'}>
               <a className="btn-primary flex items-center rounded-full">
                 Sign in{' '}
@@ -95,6 +95,7 @@ type Props = {
 const ProfileMenu = ({ session, status }: Props) => {
   const [menuOpened, setMenuOpened] = useState(false)
   const router = useRouter()
+  console.log(session)
   return (
     <div className="relative flex items-center">
       <ProfilePicture
