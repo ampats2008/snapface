@@ -78,8 +78,12 @@ export default NextAuth({
     newUser: '/user/welcome',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, profile }) {
       token.userRole = 'admin'
+      console.log('profile:', profile)
+      console.log('user:', user)
+      // user exists on first sign in of existing account;
+      // only user.id and user.email exist on account creation; the rest are undefined
       if (user)
         token = {
           ...token,
@@ -91,6 +95,13 @@ export default NextAuth({
             profileImg: user.profileImg,
           },
         }
+      // profile exists on account creation -- Note: it is provider-specific (Google's may be different than Facebook's)
+      if (profile) {
+        // assign google profile props to user
+        token['user']['firstName'] = token['user']['firstName'] ?? profile.given_name //prettier-ignore
+        token['user']['lastName'] = token['user']['lastName'] ?? profile.family_name //prettier-ignore
+        token['user']['profileImg'] = token['user']['profileImg'] ?? profile.picture //prettier-ignore
+      }
       return token
     },
     async session({ session, token }) {
