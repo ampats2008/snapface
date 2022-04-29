@@ -10,8 +10,6 @@ export const usePostDetail: (
   isLoading: boolean
   isError: boolean
 } = (postId, initialData) => {
-  //onMount: fetch 100 posts with react-query
-
   // Make query string to fetch posts:
   // if filterBy has been set (i.e. a category tab has been clicked),
   // include the filter in the query, else leave it blank
