@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction } from 'react'
 import { useQueryClient } from 'react-query'
 import { client } from '../sanity-scripts/client'
 import { Post, Comment, Reply } from '../types/Post'
+import { useGlobalState } from '../store/store'
 
 type Args = {
   commentKey: Comment['_key'] | Reply['_key']
@@ -17,11 +18,14 @@ export const useCommentActions = ({
 }: Args) => {
   const { id: postID }: { id: string } = useRouter().query
   const queryClient = useQueryClient()
+  const [globalState, globalDispatch] = useGlobalState()
 
   const handleEditComment = (newCommentBody: Comment['comment']) => {
     console.log(`Updating comment: ${newCommentBody}`)
-    // *: if deleting a reply, scan every comment's replies[] to find the obj to update;
-    // *: at scale, this should prob be refactored to include the target *thread's* commentKey as well as the reply's commentKey
+    globalDispatch({
+      type: 'snackLoading',
+      payload: { message: 'Updating your comment...', timed: false },
+    })
     const targetedCommentRootPath =
       commentType === 'comment'
         ? `comments[_key=="${commentKey}"]`
@@ -39,17 +43,29 @@ export const useCommentActions = ({
         console.log('Hurray, you updated your comment on this post!')
         queryClient.setQueryData(['postDetails'], updatedPost)
         setEditFormOpened(false)
+        globalDispatch({
+          type: 'snackSuccess',
+          payload: { message: 'Your comment was updated.', timed: true },
+        })
       })
       .catch((err: any) => {
         console.error('Oh no, the update failed: ', err.message)
-        alert(
-          `Sorry, we couldn't post your comment at this time. Please try again later. Server response: ${err.message}`
-        )
+        globalDispatch({
+          type: 'snackFailure',
+          payload: {
+            message: `Sorry, we couldn't update your comment at this time. Please try again later.`,
+            timed: true,
+          },
+        })
       })
   }
 
   const handleDeleteComment = () => {
     console.log(`Deleting comment with _key ${commentKey}`)
+    globalDispatch({
+      type: 'snackLoading',
+      payload: { message: 'Deleting your comment...', timed: false },
+    })
     // *: if deleting a reply, scan every comment's replies[] to find the obj to delete
     // *: at scale, this should prob be refactored to include the target *thread's* commentKey as well as the reply's commentKey
     const targetedCommentPath =
@@ -64,12 +80,20 @@ export const useCommentActions = ({
       .then((updatedPost) => {
         console.log('Hurray, you deleted your comment on this post!')
         queryClient.setQueryData(['postDetails'], updatedPost)
+        globalDispatch({
+          type: 'snackSuccess',
+          payload: { message: 'Your comment was deleted.', timed: true },
+        })
       })
       .catch((err: any) => {
         console.error('Oh no, the update failed: ', err.message)
-        alert(
-          `Sorry, we couldn't post your comment at this time. Please try again later. Server response: ${err.message}`
-        )
+        globalDispatch({
+          type: 'snackFailure',
+          payload: {
+            message: `Sorry, we couldn't delete your comment at this time. Please try again later.`,
+            timed: true,
+          },
+        })
       })
   }
 

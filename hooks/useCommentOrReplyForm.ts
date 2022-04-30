@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Comment, Post } from '../types/Post'
 import { User } from '../types/User'
 import { useRouter } from 'next/router'
+import { useGlobalState } from '../store/store'
 
 type Args = {
   userID: User['_id'] | null
@@ -22,18 +23,27 @@ export const useCommentOrReplyForm = ({
   const { id: postID }: { id: string } = useRouter().query
   const [textAreaVal, setTextAreaVal] = useState('')
 
-  // queryClient: used to rerender the page with mutated data once a new comment is posted
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient() // queryClient: used to rerender the page with mutated data once a new comment is posted
+  const [globalState, globalDispatch] = useGlobalState()
 
   const postCommentOrReply = () => {
     // Guard clause: don't do anything if the comment isn't long enough
     if (textAreaVal === '' || textAreaVal.length <= 2) {
-      alert(
-        'Please type in a comment greater than two characters before submitting!'
-      )
+      globalDispatch({
+        type: 'snackFailure',
+        payload: {
+          message:
+            'Please type in a comment greater than 2 characters before submitting!',
+          timed: true, //TODO: allow dev to set num of ms until timeout fires
+        },
+      })
       return
     } else {
       if (type === 'comment') {
+        globalDispatch({
+          type: 'snackLoading',
+          payload: { message: 'Posting your comment...', timed: false },
+        })
         // submit as new comment
         client
           .patch(postID) // target the current post
@@ -55,6 +65,10 @@ export const useCommentOrReplyForm = ({
             console.log('Hurray, you commented on this post!')
             queryClient.setQueryData(['postDetails'], updatedPost)
             setTextAreaVal('')
+            globalDispatch({
+              type: 'snackSuccess',
+              payload: { message: 'Your comment was posted.', timed: true },
+            })
           })
           .catch((err) => {
             console.error('Oh no, the update failed: ', err.message)
@@ -63,6 +77,10 @@ export const useCommentOrReplyForm = ({
             )
           })
       } else if (type === 'reply' && commentKey && setReplyFormOpened) {
+        globalDispatch({
+          type: 'snackLoading',
+          payload: { message: 'Posting your reply...', timed: false },
+        })
         // JSONMatch string to target the replies array of the given comment
         const replies = `comments[_key=="${commentKey}"].replies`
         // submit as new reply to a comment
@@ -86,10 +104,14 @@ export const useCommentOrReplyForm = ({
           ]) // insert a new comment at the end of the comments array
           .commit() // commit changes; promise is returned signifying error or success state
           .then((updatedPost) => {
-            console.log('Hurray, you commented on this post!')
+            console.log('Hurray, you replied to this comment!')
             queryClient.setQueryData(['postDetails'], updatedPost)
             setTextAreaVal('')
             setReplyFormOpened(false)
+            globalDispatch({
+              type: 'snackSuccess',
+              payload: { message: 'Your reply was posted.', timed: true },
+            })
           })
           .catch((err) => {
             console.error('Oh no, the update failed: ', err.message)

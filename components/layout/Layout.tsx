@@ -9,7 +9,7 @@ import { FaUserCircle } from 'react-icons/fa'
 import { IoExitOutline } from 'react-icons/io5'
 import { MdOutlinePostAdd } from 'react-icons/md'
 import { useSession, signOut } from 'next-auth/react'
-import { ProfilePicture } from '..'
+import { ProfilePicture, Snackbar } from '..'
 import MenuItem from '../comment/MenuItem'
 import { GoGear } from 'react-icons/go'
 import { Session } from 'next-auth/core/types'
@@ -78,6 +78,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <div id="mainContainer" className={'min-h-[80vh]'}>
         {children}
       </div>
+      <Snackbar />
       <footer className={'mt-10 bg-brand-600 p-10 text-center text-white'}>
         <p>Copyright &#169; 2022 Anthony Medugno.</p>
       </footer>

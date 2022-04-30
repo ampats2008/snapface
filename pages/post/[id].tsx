@@ -8,7 +8,6 @@ import {
   Loading,
   NewCommentForm,
   OriginalPoster,
-  Snackbar,
   Tag,
 } from '../../components'
 import { usePostDetail } from '../../hooks/usePostDetail'
@@ -18,7 +17,6 @@ import { buildUrlFor } from '../../sanity-scripts/client'
 import { client } from '../../sanity-scripts/client' // for prefetching data from server
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 type Props = {
   initialData: Post
 }
@@ -34,15 +32,6 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
   // Session status will determine whether or not the 'logged-in'
   // functionality will be added to this page's components or not
   const { data: session, status } = useSession()
-
-  // State to contain snackbar notifications
-  const [commentStatus, setCommentStatus] = useState<{
-    type: 'LOADING' | 'FAILED' | 'SUCCESS' | 'IDLE'
-    payload: { message: string; timed: boolean } | null
-  }>({
-    type: 'IDLE',
-    payload: null,
-  })
 
   if (isLoading) return <Loading />
 
@@ -114,9 +103,6 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
           {post.comments && <CommentSection comments={post.comments} />}
         </div>
       </main>
-      {commentStatus.type !== 'IDLE' && (
-        <Snackbar {...{ commentStatus, setCommentStatus }} />
-      )}
     </>
   )
 }

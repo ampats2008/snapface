@@ -32,7 +32,9 @@ const Discover: NextPage<Props> = ({ categories }) => {
             <Category
               key={catName}
               title={catName}
-              onClick={() => setCurrCategory(catName)}
+              onClick={() =>
+                setCurrCategory((prev) => (prev !== catName ? catName : 'all'))
+              }
               isActive={currCategory === catName ? true : false}
             />
           ))}

@@ -1,37 +1,25 @@
-import React, {
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import React, { useEffect } from 'react'
 import { FaSpinner } from 'react-icons/fa'
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io'
 import { BiErrorCircle } from 'react-icons/bi'
+import { useGlobalState } from '../store/store'
 
-type commentStatus = {
-  type: 'LOADING' | 'FAILED' | 'SUCCESS' | 'IDLE'
-  payload: { message: string; timed: boolean } | null
-}
+type Props = {}
 
-type Props = {
-  commentStatus: commentStatus
-  setCommentStatus: Dispatch<SetStateAction<commentStatus>>
-}
+const Snackbar = ({}: Props) => {
+  const [state, dispatch] = useGlobalState()
 
-const Snackbar = ({ commentStatus, setCommentStatus }: Props) => {
   useEffect(() => {
     // TODO: add fade-in animation onMount
 
     // set timeOut if message should be timed
-    if (commentStatus.payload && commentStatus.payload.timed)
-      setTimeout(() => setCommentStatus({ type: 'IDLE', payload: null }), 5000)
+    if (state.snackBarState.payload && state.snackBarState.payload.timed)
+      setTimeout(() => dispatch({ type: 'snackReset' }), 3000)
 
     return () => {
       // TODO: add fade-out animation on unMount
     }
-  }, [])
+  }, [state.snackBarState])
 
   const typeToIconMap: { [a: string]: JSX.Element } = {
     LOADING: (
@@ -45,12 +33,13 @@ const Snackbar = ({ commentStatus, setCommentStatus }: Props) => {
     ),
   }
 
+  if (state.snackBarState.type === 'IDLE') return null // only display Snackbar if not idle.
   return (
     <div className="fixed bottom-24 z-20 w-full">
       <div className="mx-auto flex w-fit max-w-[85vw] items-center rounded-xl bg-gray-900 p-5 shadow-xl xl:ml-10">
-        {typeToIconMap[commentStatus.type]}
+        {typeToIconMap[state.snackBarState.type]}
         <p className="max-w-[50ch] flex-1 leading-[1.7] text-white">
-          {commentStatus.payload?.message}
+          {state.snackBarState.payload?.message}
         </p>
       </div>
     </div>
