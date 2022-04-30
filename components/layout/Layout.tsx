@@ -13,12 +13,15 @@ import { ProfilePicture, Snackbar } from '..'
 import MenuItem from '../comment/MenuItem'
 import { GoGear } from 'react-icons/go'
 import { Session } from 'next-auth/core/types'
+import { pageInOut } from '../../utils/animations'
+import { AnimatePresence, motion } from 'framer-motion'
 
 type LayoutProps = {
+  router: Router
   children: React.ReactNode
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = ({ router: routerProp, children }) => {
   const router = useRouter()
   const { data: session, status } = useSession()
 
@@ -58,7 +61,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </Link>
         </div>
         <nav className="my-auto flex w-full max-w-screen-md flex-wrap justify-evenly">
-          <NavLink name="Home" link="/" />
+          <NavLink
+            name="Home"
+            link={status === 'authenticated' ? '/user/welcome' : '/'}
+          />
           <NavLink name="Discover" link="/discover" />
           {/* Don't show Sign-in button if user isLoggedIn or if user is on login page  */}
           {router.pathname !== '/auth/signin' && status === 'unauthenticated' && (
@@ -75,9 +81,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           )}
         </nav>
       </header>
-      <div id="mainContainer" className={'min-h-[80vh]'}>
-        {children}
-      </div>
+      <AnimatePresence exitBeforeEnter>
+        <motion.div
+          id="mainContainer"
+          className={'min-h-[80vh]'}
+          {...pageInOut}
+          key={routerProp.route}
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
       <Snackbar />
       <footer className={'mt-10 bg-brand-600 p-10 text-center text-white'}>
         <p>Copyright &#169; 2022 Anthony Medugno.</p>

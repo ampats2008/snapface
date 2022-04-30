@@ -8,6 +8,7 @@
   "dependencies": {
     "@sanity/client": "^3.3.0",
     "@sanity/image-url": "^1.0.1",
+    "framer-motion": "^6.3.3",
     "next": "latest",
     "next-auth": "^4.3.2",
     "next-auth-sanity": "^1.4.0",

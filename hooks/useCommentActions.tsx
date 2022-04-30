@@ -24,7 +24,7 @@ export const useCommentActions = ({
     console.log(`Updating comment: ${newCommentBody}`)
     globalDispatch({
       type: 'snackLoading',
-      payload: { message: 'Updating your comment...', timed: false },
+      payload: { message: 'Updating your comment...' },
     })
     const targetedCommentRootPath =
       commentType === 'comment'
@@ -45,7 +45,7 @@ export const useCommentActions = ({
         setEditFormOpened(false)
         globalDispatch({
           type: 'snackSuccess',
-          payload: { message: 'Your comment was updated.', timed: true },
+          payload: { message: 'Your comment was updated.', duration: 3 },
         })
       })
       .catch((err: any) => {
@@ -54,7 +54,7 @@ export const useCommentActions = ({
           type: 'snackFailure',
           payload: {
             message: `Sorry, we couldn't update your comment at this time. Please try again later.`,
-            timed: true,
+            duration: 3,
           },
         })
       })
@@ -64,7 +64,7 @@ export const useCommentActions = ({
     console.log(`Deleting comment with _key ${commentKey}`)
     globalDispatch({
       type: 'snackLoading',
-      payload: { message: 'Deleting your comment...', timed: false },
+      payload: { message: 'Deleting your comment...' },
     })
     // *: if deleting a reply, scan every comment's replies[] to find the obj to delete
     // *: at scale, this should prob be refactored to include the target *thread's* commentKey as well as the reply's commentKey
@@ -82,7 +82,7 @@ export const useCommentActions = ({
         queryClient.setQueryData(['postDetails'], updatedPost)
         globalDispatch({
           type: 'snackSuccess',
-          payload: { message: 'Your comment was deleted.', timed: true },
+          payload: { message: 'Your comment was deleted.', duration: 3 },
         })
       })
       .catch((err: any) => {
@@ -91,7 +91,7 @@ export const useCommentActions = ({
           type: 'snackFailure',
           payload: {
             message: `Sorry, we couldn't delete your comment at this time. Please try again later.`,
-            timed: true,
+            duration: 3,
           },
         })
       })

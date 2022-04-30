@@ -8,12 +8,16 @@ import { GlobalStateProvider } from '../store/store'
 
 const queryClient = new QueryClient()
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+function MyApp({
+  Component,
+  pageProps: { session, ...pageProps },
+  router,
+}: AppProps) {
   return (
     <GlobalStateProvider>
       <SessionProvider session={session}>
         <QueryClientProvider client={queryClient}>
-          <Layout>
+          <Layout {...{ router }}>
             <Component {...pageProps} />
           </Layout>
           <ReactQueryDevtools initialIsOpen={true} />

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { User } from '../types/User'
 import { useEffect, useMemo } from 'react'
 import { SanityDocument } from '@sanity/client'
+import { useGlobalState } from '../store/store'
 
 type Args = {
   likes?: Like[]
@@ -22,13 +23,17 @@ export const useLikeBtn = ({ likes, postID, userID }: Args) => {
     console.log('liked var:', liked)
   }, [liked])
 
-  // queryClient: used to rerender the page with mutated data once the like count is updated
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient() // queryClient: used to rerender the page with mutated data once the like count is updated
+  const [globalState, globalDispatch] = useGlobalState()
 
   const onLikeBtnClick = () => {
     if (!liked) {
       console.log('this post was just liked')
       // * the user just LIKED the post:
+      globalDispatch({
+        type: 'snackLoading',
+        payload: { message: 'Liking this post...' },
+      })
       client
         .patch(postID) // target the current post
         .setIfMissing({ likes: [] }) // add a likes array if missing from obj
@@ -46,13 +51,30 @@ export const useLikeBtn = ({ likes, postID, userID }: Args) => {
         .then((updatedPost) => {
           console.log('Hurray, you liked this post!')
           mutateQueriesData(queryClient, updatedPost)
+          globalDispatch({
+            type: 'snackSuccess',
+            payload: { message: 'You liked the post.', duration: 3 },
+          })
         })
         .catch((err) => {
           console.error('Oh no, the update failed: ', err.message)
+          globalDispatch({
+            type: 'snackFailure',
+            payload: {
+              message: `Sorry, we couldn't like the post at this time. Please try again later.`,
+              duration: 3,
+            },
+          })
         })
     } else {
       console.log('this post was just unliked')
       // * the user just UNLIKED the post
+      globalDispatch({
+        type: 'snackLoading',
+        payload: {
+          message: 'Removing your like from this post...',
+        },
+      })
       client
         .patch(postID)
         .unset([`likes[postedBy._ref == "${userID}"]`])
@@ -60,9 +82,20 @@ export const useLikeBtn = ({ likes, postID, userID }: Args) => {
         .then((updatedPost) => {
           console.log('Hurray, your like was removed from the post!')
           mutateQueriesData(queryClient, updatedPost)
+          globalDispatch({
+            type: 'snackSuccess',
+            payload: { message: 'You unliked the post.', duration: 3 },
+          })
         })
         .catch((err) => {
           console.error('Oh no, the update failed: ', err.message)
+          globalDispatch({
+            type: 'snackFailure',
+            payload: {
+              message: `Sorry, we couldn't unlike the post at this time. Please try again later.`,
+              duration: 3,
+            },
+          })
         })
     }
   }

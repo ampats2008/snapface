@@ -34,7 +34,7 @@ export const useCommentOrReplyForm = ({
         payload: {
           message:
             'Please type in a comment greater than 2 characters before submitting!',
-          timed: true, //TODO: allow dev to set num of ms until timeout fires
+          duration: 6,
         },
       })
       return
@@ -42,7 +42,7 @@ export const useCommentOrReplyForm = ({
       if (type === 'comment') {
         globalDispatch({
           type: 'snackLoading',
-          payload: { message: 'Posting your comment...', timed: false },
+          payload: { message: 'Posting your comment...' },
         })
         // submit as new comment
         client
@@ -67,7 +67,7 @@ export const useCommentOrReplyForm = ({
             setTextAreaVal('')
             globalDispatch({
               type: 'snackSuccess',
-              payload: { message: 'Your comment was posted.', timed: true },
+              payload: { message: 'Your comment was posted.', duration: 3 },
             })
           })
           .catch((err) => {
@@ -79,7 +79,7 @@ export const useCommentOrReplyForm = ({
       } else if (type === 'reply' && commentKey && setReplyFormOpened) {
         globalDispatch({
           type: 'snackLoading',
-          payload: { message: 'Posting your reply...', timed: false },
+          payload: { message: 'Posting your reply...' },
         })
         // JSONMatch string to target the replies array of the given comment
         const replies = `comments[_key=="${commentKey}"].replies`
@@ -110,7 +110,7 @@ export const useCommentOrReplyForm = ({
             setReplyFormOpened(false)
             globalDispatch({
               type: 'snackSuccess',
-              payload: { message: 'Your reply was posted.', timed: true },
+              payload: { message: 'Your reply was posted.', duration: 3 },
             })
           })
           .catch((err) => {

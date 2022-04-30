@@ -5,7 +5,7 @@ type SnackbarState = {
   type: 'LOADING' | 'FAILED' | 'SUCCESS' | 'IDLE'
   payload: {
     message: string
-    timed: boolean
+    duration?: number
   } | null
 }
 
