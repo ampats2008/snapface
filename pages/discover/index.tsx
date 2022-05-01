@@ -1,21 +1,27 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Category, Feed } from '../../components'
 import { client } from '../../sanity-scripts/client'
+import { motion, AnimateSharedLayout } from 'framer-motion'
 
 type Props = {
-  categories: string[]
+  categories: [{ _id: string; name: string }]
 }
 
 const Discover: NextPage<Props> = ({ categories }) => {
-  const [currCategory, setCurrCategory] = useState<string>('all')
+  const [activeCatName, setCurrCategory] = useState<string>('all')
 
   const { tag }: { tag?: string } = useRouter().query
 
   useEffect(() => {
-    console.log(tag)
-  }, [tag])
+    console.log(categories)
+  }, [categories])
+
+  const categoryNames = useMemo(
+    () => categories.map((cat) => cat.name),
+    [categories]
+  )
 
   return (
     <main className="py-10 px-4 xl:p-10">
@@ -25,24 +31,33 @@ const Discover: NextPage<Props> = ({ categories }) => {
           : 'Find something cool to share...'}
       </h1>
       <div id="dashboard" className="grid-cols-[200px,_1fr] sm:grid">
-        <aside className="mb-10">
-          <h2 className="mb-4 font-bold">Categories:</h2>
-          {/* will become a map after categories query is made */}
-          {categories.sort().map((catName) => (
-            <Category
-              key={catName}
-              title={catName}
-              onClick={() =>
-                setCurrCategory((prev) => (prev !== catName ? catName : 'all'))
-              }
-              isActive={currCategory === catName ? true : false}
-            />
-          ))}
-        </aside>
+        <AnimateSharedLayout>
+          <motion.aside className="mb-10">
+            <h2 className="mb-4 font-bold">Categories:</h2>
+            {/* will become a map after categories query is made */}
 
-        {/* feed takes category as prop */}
+            {categoryNames.sort().map((catName) => (
+              <Category
+                key={catName}
+                title={catName}
+                onClick={() =>
+                  setCurrCategory((prev) =>
+                    prev !== catName ? catName : 'all'
+                  )
+                }
+                isActive={activeCatName === catName ? true : false}
+              />
+            ))}
+          </motion.aside>
+        </AnimateSharedLayout>
+
         <section className="mb-10">
-          <Feed filterBy={currCategory} tagFilter={tag} />
+          <Feed
+            filterByClient={
+              categories.find((cat) => cat.name === activeCatName)?._id
+            }
+            tagFilter={tag}
+          />
         </section>
       </div>
     </main>
@@ -54,14 +69,14 @@ export default Discover
 export async function getStaticProps() {
   // get all possible post categories for tabs at build time
   const data: [{ name: string }] = await client.fetch(
-    `*[_type == 'category']{name}`
+    `*[_type == 'category']{_id, name}`
   )
 
-  const categories = data.map((obj: { name: string }) => obj.name)
+  // const categories = data.map((obj: { name: string }) => obj.name)
 
   return {
     props: {
-      categories,
+      categories: data,
     },
   }
 }

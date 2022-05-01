@@ -49,7 +49,7 @@ const Layout: React.FC<LayoutProps> = ({ router: routerProp, children }) => {
         }
       >
         <div id="logoCont">
-          <Link href="/">
+          <Link href={status === 'authenticated' ? '/user/welcome' : '/'}>
             <a className="my-10 flex items-center justify-center px-10 transition-opacity hover:opacity-60">
               <h1 className="text-3xl font-bold sm:text-5xl">
                 <span className="brand-gradient bg-clip-text text-transparent">

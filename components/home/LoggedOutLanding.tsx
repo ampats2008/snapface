@@ -1,14 +1,31 @@
+import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { BiRightArrowAlt } from 'react-icons/bi'
 
 const LoggedOutLanding = () => {
   return (
     <>
-      <h1 className="text-6xl font-bold">
-        Welcome to{' '}
+      <h1 className=" text-6xl font-bold ">
         <span className="brand-gradient bg-clip-text text-transparent">
-          {' '}
-          Snapface.
+          Welcome to
+        </span>{' '}
+        <span>
+          {'Snapface.'.split('').map((char, i) => (
+            <motion.span
+              key={`${char}-${i}`}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                type: 'tween',
+                ease: 'backInOut',
+                duration: 0.3,
+                delay: i * 0.07 + 0.25,
+              }}
+              className="inline-block"
+            >
+              {char}
+            </motion.span>
+          ))}
         </span>
       </h1>
       <p className="mt-5 text-2xl">The anti-social, social media platform.</p>

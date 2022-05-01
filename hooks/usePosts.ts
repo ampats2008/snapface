@@ -4,7 +4,7 @@ import { client } from '../sanity-scripts/client'
 import { Post } from '../types/Post'
 
 export const usePosts: (
-  filterBy: string,
+  filterBy?: string,
   userId?: string,
   tagFilter?: string
 ) => {
@@ -12,22 +12,20 @@ export const usePosts: (
   isLoading: boolean
   isError: boolean
 } = (filterBy, userId, tagFilter) => {
-  //onMount: fetch 100 posts with react-query
+  // onMount: fetch 100 posts with react-query
 
   // calculate query based on filter
   const query = useMemo(() => {
     let buildingQuery = ''
 
-    // 1. Construct first part of query (with category filter)
-    if (filterBy === 'all') {
-      buildingQuery = `*[_type == 'post' `
-    } else if (filterBy === 'myPosts') {
+    // 1. Construct first part of query (with filter if specified)
+    if (filterBy === 'myPosts') {
       buildingQuery = `*[_type == 'post' && postedBy._ref == '${userId}' `
     } else if (filterBy === 'myLikedPosts') {
       buildingQuery = `*[_type == 'post' && '${userId}' in likes[].postedBy._ref `
     } else {
-      // filterBy must be a category name in this case:
-      buildingQuery = `*[_type == 'post' && references(*[_type=="category" && name == '${filterBy}']._id) `
+      // use no filter if none was found:
+      buildingQuery = `*[_type == 'post' `
     }
 
     // 2. add a Tag filter if it exists

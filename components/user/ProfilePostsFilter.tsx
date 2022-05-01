@@ -3,7 +3,7 @@ import { Tab } from '..'
 import StyledButton from '../StyledButton'
 
 type Props = {
-  setFilter: Dispatch<SetStateAction<string>>,
+  setFilter: Dispatch<SetStateAction<'myPosts' | 'myLikedPosts'>>
   filter: string
 }
 

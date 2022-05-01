@@ -10,7 +10,7 @@ const UserProfile: NextPage<{ initialData: User }> = ({
   initialData: pageUser,
 }) => {
   // Call for posts based on filter value
-  const [filter, setFilter] = useState('myPosts')
+  const [filter, setFilter] = useState<'myPosts' | 'myLikedPosts'>('myPosts')
 
   return (
     <main className="mt-4 xl:mt-0">
@@ -18,7 +18,7 @@ const UserProfile: NextPage<{ initialData: User }> = ({
       {/* Posts feed with controls for filtering by *liked* and *postedBy* current user */}
       <ProfilePostsFilter {...{ setFilter, filter }} />
       <section className="mb-10 xl:mx-auto xl:w-[80vw]">
-        <Feed filterBy={filter} userId={pageUser._id} />
+        <Feed filterByServer={filter} userId={pageUser._id} />
       </section>
     </main>
   )

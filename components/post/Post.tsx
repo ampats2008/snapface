@@ -4,12 +4,13 @@ import { useRouter } from 'next/router'
 import { Post } from '../../types/Post'
 import { DestinationLink, LikeBtn } from '..'
 import { useSession } from 'next-auth/react'
+import { forwardRef } from 'react'
 
 type Props = {
   post: Post
 }
 
-const Post = ({ post }: Props) => {
+const Post = ({ post }: Props, lastPostRef?: any) => {
   const router = useRouter()
 
   const { data: session, status } = useSession()
@@ -21,6 +22,7 @@ const Post = ({ post }: Props) => {
   return (
     <div
       id="cardContainer"
+      ref={lastPostRef}
       className={`my-10 mx-3 w-min rounded-lg bg-white drop-shadow-md transition-all ease-out will-change-[filter] hover:-translate-y-2 hover:drop-shadow-2xl sm:m-10`}
     >
       <div
@@ -61,7 +63,7 @@ const Post = ({ post }: Props) => {
   )
 }
 
-export default Post
+export default forwardRef(Post)
 
 const AltText = ({ title }: { title: string }) => (
   // displays if post.image could not be found for some reason.
