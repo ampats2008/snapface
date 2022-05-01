@@ -5,6 +5,7 @@ import { Post } from '../../types/Post'
 import { DestinationLink, LikeBtn } from '..'
 import { useSession } from 'next-auth/react'
 import { forwardRef } from 'react'
+import { motion } from 'framer-motion'
 
 type Props = {
   post: Post
@@ -20,10 +21,12 @@ const Post = ({ post }: Props, lastPostRef?: any) => {
   }
 
   return (
-    <div
+    <motion.div
+      layout
+      whileHover={{ y: -10 }}
       id="cardContainer"
       ref={lastPostRef}
-      className={`my-10 mx-3 w-min rounded-lg bg-white drop-shadow-md transition-all ease-out will-change-[filter] hover:-translate-y-2 hover:drop-shadow-2xl sm:m-10`}
+      className={`my-10 mx-3 w-min rounded-lg bg-white shadow-sm sm:m-10`}
     >
       <div
         id="cardContent"
@@ -43,7 +46,6 @@ const Post = ({ post }: Props, lastPostRef?: any) => {
         ) : (
           <AltText title={post.title} />
         )}
-
         {status === 'authenticated' && (
           <LikeBtn
             posClass={'absolute top-2 right-2 px-2 py-1'}
@@ -59,7 +61,7 @@ const Post = ({ post }: Props, lastPostRef?: any) => {
           />
         )}
       </div>
-    </div>
+    </motion.div>
   )
 }
 

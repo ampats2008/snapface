@@ -1,11 +1,10 @@
 import Error from 'next/error'
-import Image from 'next/image'
 import { FC, useEffect, useState } from 'react'
 import { usePosts } from '../hooks/usePosts'
 import { Loading, Post } from './index'
 import { Category } from '../types/Post'
-import StyledButton from './StyledButton'
 import { useScrolledToBottom } from '../hooks/useScrolledToBottom'
+import { motion } from 'framer-motion'
 
 type Props = {
   filterByServer?: 'all' | 'myPosts' | 'myLikedPosts'
@@ -52,7 +51,11 @@ const Feed: FC<Props> = ({
   if (isError) return <Error statusCode={401} /> // replace this with my own error component
 
   return (
-    <div id="postsContainer" className="flex-wrap justify-center sm:flex">
+    <motion.div
+      layout
+      id="postsContainer"
+      className="flex-wrap justify-center sm:flex"
+    >
       {posts.length > 0 ? (
         posts
           .filter((post) =>
@@ -72,7 +75,7 @@ const Feed: FC<Props> = ({
       ) : (
         <p className="mx-auto w-max">No posts found.</p>
       )}
-    </div>
+    </motion.div>
   )
 }
 
