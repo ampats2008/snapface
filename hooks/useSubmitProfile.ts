@@ -99,7 +99,9 @@ export const useSubmitProfile = ({
         .then((newDoc) => {
           console.log('success! heres the new document:', newDoc)
           setFormSubmitStatus({ type: 'SUCCESS', payload: newDoc })
-          queryClient.setQueriesData(['getUser'], newDoc)
+          queryClient.setQueriesData(['getUser'], newDoc) // !: doesn't seem to be working, changes are not reflected immediately
+          queryClient.invalidateQueries('getUser')
+          console.log(newDoc)
         })
         .catch((err) => {
           console.log(
