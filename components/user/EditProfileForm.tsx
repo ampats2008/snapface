@@ -73,10 +73,12 @@ const EditProfileForm = ({ userId, initialUserInfo }: Props) => {
 
           {formSubmitStatus.type === 'SUCCESS' && (
             <SuccessNotification>
-              Your profile was updated successfully. View it{' '}
+              Your profile was updated successfully. The changes will be
+              reflected{' '}
               <Link href={`/user/${formSubmitStatus?.payload?._id}`}>
-                <a className="text-brand-600 hover:underline">here.</a>
-              </Link>
+                <a className="text-brand-600 hover:underline">here</a>
+              </Link>{' '}
+              shortly.
             </SuccessNotification>
           )}
 
