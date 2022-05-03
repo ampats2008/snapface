@@ -32,7 +32,7 @@ const NewReplyForm = ({
     setTextAreaVal,
     postCommentOrReply: postNewReply,
   } = useCommentOrReplyForm({
-    userID: status === 'authenticated' ? session.user.id : null,
+    userID: status === 'authenticated' && session ? session.user.id : null,
     commentKey,
     setReplyFormOpened,
     type: 'reply',
@@ -47,7 +47,7 @@ const NewReplyForm = ({
         id="replyHead"
         className="flex items-center rounded-full bg-gray-100 p-2 shadow-sm"
       >
-        {status !== 'loading' && (
+        {status !== 'loading' && session && (
           <>
             <ProfilePicture
               {...{

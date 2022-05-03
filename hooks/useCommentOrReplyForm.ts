@@ -6,6 +6,7 @@ import { Comment, Post } from '../types/Post'
 import { User } from '../types/User'
 import { useRouter } from 'next/router'
 import { useGlobalState } from '../store/store'
+import { ParsedUrlQuery } from 'querystring'
 
 type Args = {
   userID: User['_id'] | null
@@ -20,7 +21,9 @@ export const useCommentOrReplyForm = ({
   type,
   setReplyFormOpened,
 }: Args) => {
-  const { id: postID }: { id: string } = useRouter().query
+  const { id }: ParsedUrlQuery = useRouter().query
+  const postID = Array.isArray(id) ? id[0] : id !== undefined ? id : '' // make sure id is a string and defined, else set it to an empty string
+
   const [textAreaVal, setTextAreaVal] = useState('')
 
   const queryClient = useQueryClient() // queryClient: used to rerender the page with mutated data once a new comment is posted

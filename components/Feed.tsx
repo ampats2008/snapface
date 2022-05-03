@@ -65,10 +65,10 @@ const Feed: FC<Props> = ({
               : true
           )
           .slice(0, displayedPosts)
-          .map((post) => (
+          .map((post, i) => (
             <Post
               key={`${post.postedBy._ref}_${post.title}_${post._id}`}
-              ref={endOfScrollRef}
+              ref={i === displayedPosts - 1 ? endOfScrollRef : undefined}
               {...{ post }}
             />
           ))

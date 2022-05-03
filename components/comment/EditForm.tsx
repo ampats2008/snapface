@@ -2,10 +2,6 @@ import React, { Dispatch, SetStateAction, useState } from 'react'
 import { Comment } from '../../types/Post'
 import { StyledButton } from '../'
 
-// commentKey={comment._key}
-//             commentBody={comment.comment}
-//             {...{ replyParentKey, setEditFormOpened }}
-
 type Props = {
   commentBody: Comment['comment']
   setEditFormOpened: Dispatch<SetStateAction<boolean>>
@@ -20,7 +16,7 @@ const EditForm = ({
   const [textAreaVal, setTextAreaVal] = useState(commentBody)
 
   return (
-    <div id="replyForm" className="flex items-center justify-between p-4">
+    <div id="editForm" className="flex items-center justify-between p-4">
       <textarea
         placeholder={`Update your comment here...`}
         className="h-[100px] w-[80%] resize-none rounded-xl bg-gray-200 p-2"

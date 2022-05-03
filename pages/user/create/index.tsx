@@ -14,7 +14,7 @@ const CreatePostPage: NextPage = () => {
 
   return (
     <main className="py-10 px-4 xl:p-10">
-      <CreatePostForm {...{ userId: session?.user?.id }} />
+      <CreatePostForm {...{ userId: session!?.user!?.id }} />
     </main>
   )
 }

@@ -113,6 +113,7 @@ const CreatePostForm = ({ userId }: Props) => {
                   //*: weird issue with typescript definitions from react-select. Works fine though.
                   //@ts-ignore
                   onChange={setCategories}
+                  //@ts-ignore
                   options={categoryOptions}
                   defaultValue={categories}
                 />

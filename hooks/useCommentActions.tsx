@@ -4,6 +4,7 @@ import { useQueryClient } from 'react-query'
 import { client } from '../sanity-scripts/client'
 import { Post, Comment, Reply } from '../types/Post'
 import { useGlobalState } from '../store/store'
+import { ParsedUrlQuery } from 'querystring'
 
 type Args = {
   commentKey: Comment['_key'] | Reply['_key']
@@ -16,7 +17,9 @@ export const useCommentActions = ({
   commentType,
   setEditFormOpened,
 }: Args) => {
-  const { id: postID }: { id: string } = useRouter().query
+  const { id }: ParsedUrlQuery = useRouter().query
+  const postID = Array.isArray(id) ? id[0] : id !== undefined ? id : '' // make sure id is a string and defined, else set it to an empty string
+
   const queryClient = useQueryClient()
   const [globalState, globalDispatch] = useGlobalState()
 

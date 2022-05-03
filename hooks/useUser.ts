@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useQuery } from 'react-query'
 import { client } from '../sanity-scripts/client'
-import { Session } from '../types/Session'
+import { Session } from 'next-auth/core/types'
 import { User } from '../types/User'
 
 export const useUser: (
@@ -14,6 +14,7 @@ export const useUser: (
   error: any
 } = (session, status) => {
   // if session status === authenticated, call for user data from sanity.
+
   const {
     data: user,
     isLoading,
@@ -21,7 +22,7 @@ export const useUser: (
     error,
   } = useQuery<User>(
     ['getUser', session, status],
-    () => client.fetch(userQuery(session.user.id)),
+    () => client.fetch(userQuery(session!.user.id)),
     { enabled: status === 'authenticated', refetchOnWindowFocus: false }
   )
 

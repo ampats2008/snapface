@@ -76,7 +76,7 @@ const Layout: React.FC<LayoutProps> = ({ router: routerProp, children }) => {
             </Link>
           )}
 
-          {status === 'authenticated' && (
+          {status === 'authenticated' && session && (
             <ProfileMenu {...{ session, status }} />
           )}
         </nav>

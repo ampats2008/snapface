@@ -16,7 +16,7 @@ const UserSettingsPage: NextPage = () => {
   return (
     <main className="py-10 px-4 xl:p-10">
       <EditProfileForm
-        {...{ userId: session?.user?.id, initialUserInfo: currentUser }}
+        {...{ userId: session!?.user!?.id, initialUserInfo: currentUser }}
       />
     </main>
   )

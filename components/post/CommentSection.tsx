@@ -15,8 +15,8 @@ const CommentSection = ({ comments }: Props) => {
       {comments
         .sort((a, b) => {
           // sort comments by most recent to least recent
-          const dateA = new Date(a.timeStamp)
-          const dateB = new Date(b.timeStamp)
+          const dateA = new Date(a.timeStamp).valueOf()
+          const dateB = new Date(b.timeStamp).valueOf()
           return dateB - dateA
         })
         .slice(0, commentsShown)

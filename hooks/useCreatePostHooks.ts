@@ -1,7 +1,7 @@
 import { client } from '../sanity-scripts/client'
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Category, Tag } from '../components/create-post/CreatePostForm'
-import { Session } from '../types/Session'
+import { Session } from 'next-auth/core/types'
 import { v4 as uuidv4 } from 'uuid'
 
 export const useInitialCategories = () => {

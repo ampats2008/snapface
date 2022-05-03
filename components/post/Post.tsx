@@ -46,7 +46,7 @@ const Post = ({ post }: Props, lastPostRef?: any) => {
         ) : (
           <AltText title={post.title} />
         )}
-        {status === 'authenticated' && (
+        {status === 'authenticated' && session && (
           <LikeBtn
             posClass={'absolute top-2 right-2 px-2 py-1'}
             likes={post?.likes}

@@ -57,9 +57,14 @@ const PostComment = ({
     setEditFormOpened,
   })
 
+  //TODO: add layout attr + motion.div to comment section to animate posted / deleted comments
+
   return (
     <>
-      <div id="comment" className="my-5 rounded-lg bg-gray-100 p-3 shadow-sm">
+      <div
+        id="comment"
+        className="my-5 animate-fadeIn rounded-lg bg-gray-100 p-3 shadow-sm"
+      >
         <div id="commentHead" className="flex items-center">
           <ProfilePicture
             {...{
@@ -80,7 +85,7 @@ const PostComment = ({
             }}
           />
           {/* Context menu -- for delete / edit / reply buttons */}
-          {status === 'authenticated' && !userLoading && (
+          {status === 'authenticated' && session && !userLoading && (
             <ContextMenu
               showEditDelete={session.user.id === postedByUser._id}
               {...{
@@ -95,7 +100,6 @@ const PostComment = ({
           <CommentBody commentBody={comment.comment} />
         ) : (
           <EditForm
-            commentKey={comment._key}
             commentBody={comment.comment}
             {...{ replyParentKey, setEditFormOpened, handleEditComment }}
           />

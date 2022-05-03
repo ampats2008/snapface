@@ -7,7 +7,7 @@ import { HiReply } from 'react-icons/hi'
 
 type Props = {
   showEditDelete: boolean
-  handleDeleteComment: React.MouseEventHandler
+  handleDeleteComment: () => void
   setReplyFormOpened: Dispatch<SetStateAction<boolean>>
   setEditFormOpened: Dispatch<SetStateAction<boolean>>
 }

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import { Category, Feed } from '../../components'
 import { client } from '../../sanity-scripts/client'
-import { motion, AnimateSharedLayout } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 type Props = {
   categories: [{ _id: string; name: string }]
@@ -31,25 +31,21 @@ const Discover: NextPage<Props> = ({ categories }) => {
           : 'Find something cool to share...'}
       </h1>
       <div id="dashboard" className="grid-cols-[200px,_1fr] sm:grid">
-        <AnimateSharedLayout>
-          <motion.aside className="mb-10">
-            <h2 className="mb-4 font-bold">Categories:</h2>
-            {/* will become a map after categories query is made */}
+        <motion.aside className="mb-10">
+          <h2 className="mb-4 font-bold">Categories:</h2>
+          {/* will become a map after categories query is made */}
 
-            {categoryNames.sort().map((catName) => (
-              <Category
-                key={catName}
-                title={catName}
-                onClick={() =>
-                  setCurrCategory((prev) =>
-                    prev !== catName ? catName : 'all'
-                  )
-                }
-                isActive={activeCatName === catName ? true : false}
-              />
-            ))}
-          </motion.aside>
-        </AnimateSharedLayout>
+          {categoryNames.sort().map((catName) => (
+            <Category
+              key={catName}
+              title={catName}
+              onClick={() =>
+                setCurrCategory((prev) => (prev !== catName ? catName : 'all'))
+              }
+              isActive={activeCatName === catName ? true : false}
+            />
+          ))}
+        </motion.aside>
 
         <section className="mb-10">
           <Feed

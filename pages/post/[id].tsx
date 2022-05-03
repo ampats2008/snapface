@@ -17,13 +17,15 @@ import { buildUrlFor } from '../../sanity-scripts/client'
 import { client } from '../../sanity-scripts/client' // for prefetching data from server
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { ParsedUrlQuery } from 'querystring'
 type Props = {
   initialData: Post
 }
 
 // Depends on User to be signed in:
 const PostDetails: NextPage<Props> = ({ initialData }) => {
-  const { id: postID }: { id: string } = useRouter().query
+  const { id }: ParsedUrlQuery = useRouter().query
+  const postID = Array.isArray(id) ? id[0] : id !== undefined ? id : '' // make sure id is a string and defined, else set it to an empty string
 
   const { post, isLoading, isError } = usePostDetail(postID, initialData)
 
@@ -46,6 +48,7 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
           </h1>
           <div className="relative my-5 h-[50vh] max-w-screen-md">
             <Image
+              key={post.image.asset._ref}
               className="rounded-2xl"
               layout="fill"
               objectFit="cover"
@@ -62,7 +65,9 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
             )}
             <LikeBtn
               likes={post.likes}
-              userID={status === 'authenticated' ? session?.user?.id : null}
+              userID={
+                status === 'authenticated' && session ? session?.user?.id : null
+              }
               {...{ postID }}
             />
           </div>
@@ -88,7 +93,7 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
           <h1 className="my-4 text-xl  font-semibold">
             Comments ({post.comments?.length ? post.comments?.length : '0'}):
           </h1>
-          {status === 'authenticated' && (
+          {status === 'authenticated' && session && (
             <NewCommentForm userID={session?.user?.id} />
           )}
           {status === 'unauthenticated' && (

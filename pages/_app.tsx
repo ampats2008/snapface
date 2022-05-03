@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { SessionProvider } from 'next-auth/react'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { GlobalStateProvider } from '../store/store'
+import { useCallback } from 'react'
 
 const queryClient = new QueryClient()
 
@@ -13,6 +14,15 @@ function MyApp({
   pageProps: { session, ...pageProps },
   router,
 }: AppProps) {
+  useCallback(() => {
+    // disable logging in production environments
+    if (process.env.NODE_ENV === 'production') {
+      console.log = () => {}
+      console.error = () => {}
+      console.debug = () => {}
+    }
+  }, [process.env.NODE_ENV])
+
   return (
     <GlobalStateProvider>
       <SessionProvider session={session}>

@@ -1,7 +1,6 @@
 import { client } from '../sanity-scripts/client'
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { Session } from '../types/Session'
-import { v4 as uuidv4 } from 'uuid'
+import { Session } from 'next-auth/core/types'
 import { useQueryClient } from 'react-query'
 
 type Args = {

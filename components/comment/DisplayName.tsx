@@ -1,6 +1,7 @@
-import { Session } from '../../types/Session'
 import { User } from '../../types/User'
 import Link from 'next/link'
+import { Session } from 'next-auth/core/types'
+import { isUserNotSession } from '../../types/typeGuards'
 
 const DisplayName = ({
   userLoading,
@@ -15,7 +16,7 @@ const DisplayName = ({
     <Link
       href={
         !userLoading
-          ? `/user/${user.hasOwnProperty('_id') ? user._id : user.id}`
+          ? `/user/${isUserNotSession(user) ? user._id : user.id}`
           : '#'
       }
     >

@@ -8,6 +8,8 @@ import GoogleProvider, { GoogleProfile } from 'next-auth/providers/google'
 // import EmailProvider from "next-auth/providers/email"
 import SanityAdapter from '../../../sanity-scripts/adapter/adapter'
 import { client } from '../../../sanity-scripts/client'
+import { Session } from 'next-auth/core/types'
+import { isTokenWithUser } from '../../../types/typeGuards'
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -40,8 +42,8 @@ export default NextAuth({
     //   clientSecret: process.env.GITHUB_SECRET,
     // }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_SECRET,
+      clientId: process.env.GOOGLE_ID!,
+      clientSecret: process.env.GOOGLE_SECRET!,
       profile(profile: GoogleProfile) {
         return {
           id: profile.sub,
@@ -96,7 +98,7 @@ export default NextAuth({
           },
         }
       // profile exists on account creation -- Note: it is provider-specific (Google's may be different than Facebook's)
-      if (profile) {
+      if (profile && isTokenWithUser(token)) {
         // assign google profile props to user
         token['user']['firstName'] = token['user']['firstName'] ?? profile.given_name //prettier-ignore
         token['user']['lastName'] = token['user']['lastName'] ?? profile.family_name //prettier-ignore
@@ -107,7 +109,7 @@ export default NextAuth({
     async session({ session, token }) {
       // define the piece(s) of the token that are exposed to the front-end
       // when useSession() or getSession() are called
-      session.user = token.user
+      if (isTokenWithUser(token)) session.user = token.user
       return session
     },
   },

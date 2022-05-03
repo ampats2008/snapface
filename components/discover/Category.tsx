@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { motion, AnimateSharedLayout } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 const Category = ({
   isActive,
