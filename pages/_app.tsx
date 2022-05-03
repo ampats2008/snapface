@@ -30,7 +30,7 @@ function MyApp({
           <Layout {...{ router }}>
             <Component {...pageProps} />
           </Layout>
-          <ReactQueryDevtools initialIsOpen={true} />
+          {/* <ReactQueryDevtools initialIsOpen={true} /> */}
         </QueryClientProvider>
       </SessionProvider>
     </GlobalStateProvider>
