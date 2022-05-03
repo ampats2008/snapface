@@ -13,6 +13,7 @@ import {
 } from '../'
 import RepliesSection from './RepliesSection'
 import { useCommentActions } from '../../hooks/useCommentActions'
+import { motion } from 'framer-motion'
 
 type Props = {
   comment: Comment
@@ -57,13 +58,13 @@ const PostComment = ({
     setEditFormOpened,
   })
 
-  //TODO: add layout attr + motion.div to comment section to animate posted / deleted comments
-
   return (
     <>
-      <div
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         id="comment"
-        className="my-5 animate-fadeIn rounded-lg bg-gray-100 p-3 shadow-sm"
+        className="my-5 rounded-lg bg-gray-100 p-3 shadow-sm"
       >
         <div id="commentHead" className="flex items-center">
           <ProfilePicture
@@ -104,7 +105,7 @@ const PostComment = ({
             {...{ replyParentKey, setEditFormOpened, handleEditComment }}
           />
         )}
-      </div>
+      </motion.div>
       {replyFormOpened && (
         <NewReplyForm
           commentKey={replyParentKey ? replyParentKey : comment._key}
