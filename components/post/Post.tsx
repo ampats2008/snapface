@@ -23,10 +23,18 @@ const Post = ({ post }: Props, lastPostRef?: any) => {
   return (
     <motion.div
       layout
-      whileHover={{ y: -10 }}
+      animate={{
+        filter:
+          'drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06))',
+      }}
+      whileHover={{
+        y: -10,
+        filter:
+          'drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06))',
+      }}
       id="cardContainer"
       ref={lastPostRef}
-      className={`my-10 mx-3 w-min rounded-lg bg-white shadow-sm sm:m-10`}
+      className={`my-10 mx-3 w-min rounded-xl bg-white shadow-sm sm:m-10`}
     >
       <div
         id="cardContent"
@@ -35,7 +43,7 @@ const Post = ({ post }: Props, lastPostRef?: any) => {
       >
         {post.image ? (
           <Image
-            className="rounded-lg"
+            className="rounded-xl"
             layout="fill"
             objectFit="cover"
             src={buildUrlFor(post.image).height(600).width(400).url()}
