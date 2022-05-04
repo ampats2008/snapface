@@ -13,7 +13,10 @@ export const usePostDetail: (
   // Make query string to fetch posts:
   // if filterBy has been set (i.e. a category tab has been clicked),
   // include the filter in the query, else leave it blank
-  const query = `*[_type == 'post' && _id == '${postId}'][0]`
+  const query = `*[_type == 'post' && _id == '${postId}'][0]{
+    ...,
+    comments[dateTime(timeStamp) < dateTime(now())]
+  }` // !: temp fix because I added some invalid comment data (with posted timestamps in the future)
 
   const {
     data: post,

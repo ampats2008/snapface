@@ -30,8 +30,6 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
 
   const { post, isLoading, isError } = usePostDetail(postID, initialData)
 
-  console.log(post)
-
   // Session status will determine whether or not the 'logged-in'
   // functionality will be added to this page's components or not
   const { data: session, status } = useSession()
@@ -116,7 +114,10 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
 export default PostDetails
 
 export async function getServerSideProps(context: NextPageContext) {
-  const query = `*[_type == 'post' && _id == '${context.query.id}'][0]`
+  const query = `*[_type == 'post' && _id == '${context.query.id}'][0]{
+    ...,
+    comments[dateTime(timeStamp) < dateTime(now())]
+  }` // !: temp fix because I added some invalid comment data (with posted timestamps in the future)
 
   const initialData = await client.fetch(query)
 
