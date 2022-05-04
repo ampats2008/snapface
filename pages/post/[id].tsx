@@ -18,6 +18,7 @@ import { client } from '../../sanity-scripts/client' // for prefetching data fro
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { ParsedUrlQuery } from 'querystring'
+import { useEffect } from 'react'
 type Props = {
   initialData: Post
 }
@@ -46,7 +47,7 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
           <h1 className="mb-5 max-w-screen-md text-3xl font-bold">
             {post.title}
           </h1>
-          <div className="relative my-5 h-[50vh] max-w-screen-md">
+          <div className="relative my-5 min-h-[70vh] max-w-screen-sm">
             <Image
               key={post.image.asset._ref}
               className="rounded-2xl"
