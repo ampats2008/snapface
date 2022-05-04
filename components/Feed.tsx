@@ -27,7 +27,7 @@ const Feed: FC<Props> = ({
     tagFilter
   )
 
-  const postsPerPage = 3
+  const postsPerPage = 8
   const [displayedPosts, setDisplayedPosts] = useState(postsPerPage)
 
   // Infinite Scroll custom hook
@@ -42,8 +42,9 @@ const Feed: FC<Props> = ({
 
   // reveal more records when user reaches end of post grid, unless all the posts are displayed
   useEffect(() => {
-    if (needMoreItems && posts.length > displayedPosts)
+    if (needMoreItems && posts.length > displayedPosts) {
       setDisplayedPosts((prev) => prev + postsPerPage)
+    }
   }, [needMoreItems])
 
   if (isLoading) return <Loading />
