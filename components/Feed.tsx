@@ -74,7 +74,9 @@ const Feed: FC<Props> = ({
             />
           ))
       ) : (
-        <p className="mx-auto w-max">No posts found.</p>
+        <motion.p layout="position" className="mx-auto w-max">
+          No posts found.
+        </motion.p>
       )}
     </motion.div>
   )
