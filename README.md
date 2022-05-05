@@ -11,6 +11,7 @@ Snapface (not to be confused with [MyFace or InstantChat](https://twitter.com/ed
 - [react-query](https://react-query.tanstack.com/) - Client-side fetching
 - [react-select](https://react-select.com/home) - Multi-select form input fields
 - [react-tracked](https://react-tracked.js.org/) - Global state-manager
+- [Framer-Motion](https://www.framer.com/motion/) - Page transitions / Layout change animations
 - [uuid](https://www.npmjs.com/package/uuid) - Creates unique IDs
 
 ### Next.js
@@ -40,6 +41,10 @@ This package was used for creating multi-select dropdown boxes on the _Create Po
 ### react-tracked
 
 This is a lightweight global state-management solution that I found easy to learn due to my familiarity with React Hooks. It acts like useContext, but prevents the rerendering performance issues that useContext can cause. It allowed me to control the state of a root-level `<Snackbar />` component via dispatches from components buried deep in the React tree. I wanted "user-to-database" interactions to cause state changes in the `<Snackbar />`, so any user interactions with comments or likes will cause the `<Snackbar />` to pop up temporarily.
+
+### Framer-Motion
+
+This is a powerful animation library that is surprisingly easy to set up with React projects. I used it for simple page transition animations as well as some more advanced layout animations. For example, on the _Discover_ page, when a category is selected, the `<Feed />` is filtered to a subset of posts. As this occurs, the remaining posts are translated to their new location. This type of animation would be incredibly difficult to handle manually. However, Framer-motion only requires you to make two simple changes to accomplish this: (1) change your container `<div>` and your child `<divs >` to `<motion.div >` components, and (2) give them both the `layout` prop. It blew my mind how easy it was to set this up.
 
 ### uuid
 
