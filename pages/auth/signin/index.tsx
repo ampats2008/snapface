@@ -53,6 +53,8 @@ const Login: NextPage<Props> = ({ providers }) => {
     // facebook: <AiOutlineFacebook className={logoClasses} />,
   }
 
+  console.log('Providers:', providers)
+
   return (
     <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
       <h1 className="mt-5 mb-10 text-2xl font-bold">Please login below</h1>
