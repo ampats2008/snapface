@@ -44,7 +44,7 @@ This is a lightweight global state-management solution that I found easy to lear
 
 ### Framer-Motion
 
-This is a powerful animation library that is surprisingly easy to set up with React projects. I used it for simple page transition animations as well as some more advanced layout animations. For example, on the _Discover_ page, when a category is selected, the `<Feed />` is filtered to a subset of posts. As this occurs, the remaining posts are translated to their new location. This type of animation would be incredibly difficult to handle manually. However, Framer-motion only requires you to make two simple changes to accomplish this: (1) change your container `<div>` and your child `<divs >` to `<motion.div >` components, and (2) give them both the `layout` prop. It blew my mind how easy it was to set this up.
+This is a powerful animation library that is surprisingly easy to set up with React projects. I used it for simple page transition animations as well as some more advanced layout animations. For example, on the _Discover_ page, when a category is selected, the `<Feed />` is filtered to a subset of posts. As this occurs, the remaining posts are translated to their new location. This type of animation would be incredibly difficult to handle manually. However, Framer-motion only requires you to make two simple changes to accomplish this: (1) change your container `<div>` and your child `<divs>` to `<motion.div />` components, and (2) give them both the `layout` prop. It blew my mind how easy it was to set this up.
 
 ### uuid
 
