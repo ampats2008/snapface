@@ -11,7 +11,7 @@ Snapface (not to be confused with [MyFace or InstantChat](https://twitter.com/ed
 - [react-query](https://react-query.tanstack.com/) - Client-side fetching
 - [react-select](https://react-select.com/home) - Multi-select form input fields
 - [react-tracked](https://react-tracked.js.org/) - Global state-manager
-- [uuid](https://www.npmjs.com/package/uuid) - Creates unique IDs.
+- [uuid](https://www.npmjs.com/package/uuid) - Creates unique IDs
 
 ### Next.js
 
