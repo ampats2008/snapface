@@ -1,8 +1,9 @@
+import Image from 'next/image'
 import type { NextPage } from 'next'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import { LoggedOutLanding } from '../components'
+import { LoggedOutLanding as LoggedOutLandingContent } from '../components'
 
 const Home: NextPage = () => {
   const { data: session, status } = useSession()
@@ -20,9 +21,9 @@ const Home: NextPage = () => {
   }, [status])
 
   return (
-    <main className="grid min-h-[50vh] place-content-center">
+    <main>
       {/* display only if not logged in: */}
-      <LoggedOutLanding />
+      <LoggedOutLandingContent />
     </main>
   )
 }

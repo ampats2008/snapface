@@ -55,9 +55,7 @@ const Login: NextPage<Props> = ({ providers }) => {
 
   return (
     <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
-      <h1 className="mt-5 mb-10 text-4xl font-bold xl:mt-0">
-        Please login below
-      </h1>
+      <h1 className="mt-5 mb-10 text-2xl font-bold">Please login below</h1>
       {/* Print error if one exists: */}
       {error && typeof error === 'string' && (
         <ErrorNotification>{errorMsgMap[error]}</ErrorNotification>
