@@ -82,7 +82,7 @@ const PostDetails: NextPage<Props> = ({ initialData }) => {
             id="tags"
             className="mb-10 flex max-w-screen-sm flex-wrap items-center justify-start gap-y-6 gap-x-2 py-4"
           >
-            {post.tags.map((tag) => (
+            {post?.tags?.map((tag) => (
               <Tag key={tag} {...{ tag }} />
             ))}
           </div>
