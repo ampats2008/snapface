@@ -8,10 +8,10 @@ Snapface (not to be confused with [MyFace or InstantChat](https://twitter.com/ed
 - [Sanity.io](https://www.sanity.io/) - Headless CMS, and the Sanity JS Client
 - [NextAuth.js](https://next-auth.js.org/) - User authentication
 - [react-icons](https://react-icons.github.io/react-icons/) - icon pack
-- [react-query](https://react-query.tanstack.com/) -
-- [react-select](https://react-select.com/home)
-- [react-tracked](https://react-tracked.js.org/)
-- [uuid](https://www.npmjs.com/package/uuid)
+- [react-query](https://react-query.tanstack.com/) - Client-side fetching
+- [react-select](https://react-select.com/home) - Multi-select form input fields
+- [react-tracked](https://react-tracked.js.org/) - Global state-manager
+- [uuid](https://www.npmjs.com/package/uuid) - Creates unique IDs.
 
 ### Next.js
 
